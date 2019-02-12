@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flow JS</title>
+
+<style type="text/css">
+  #container {
+    position: absolute;
+    width: 900px;
+    height: 500px;
+    border: 2px solid black;
+  }
+</style>
+
+</head>
+<body>
+
+  <div id="container"></div>
+
+  <script type="text/javascript" src="src/_tools.js"></script>
+  <script type="text/javascript" src="src/_config.js"></script>
+  <script type="text/javascript" src="src/_theme.js"></script>
+  <script type="text/javascript" src="src/_designer.js"></script>
+  <script type="text/javascript" src="src/_node.js"></script>
+  <script type="text/javascript" src="src/_connector.js"></script>
+  <script type="text/javascript" src="src/_link.js"></script>
+
+  <script type="text/javascript">
+    
+    var designer = new Designer({
+      container: container,
+      theme: FlowJS.Theme.Dark,
+    });  
+
+
+    function renderTestNode(inputCount, outputCount) {
+      var inputs = [];
+      var outputs = [];
+
+      for (var i = 0; i < inputCount; i++) {
+        inputs.push(new Connector({}));
+      }
+
+      for (var i = 0; i < outputCount; i++) {
+        outputs.push(new Connector({}));
+      }
+
+      designer.createNode({
+        x: 50,
+        y: 50,
+        title: 'hello world',
+        subtitle: 'hi, this is world',
+        inputs: inputs,
+        outputs: outputs
+      });
+
+    }
+
+  </script>
+
+</body>
+</html>
