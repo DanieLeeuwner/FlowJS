@@ -47,14 +47,14 @@ class Node {
     // update outputs
 
     // update selection
-    this._refreshBackground();
+    this.refreshBackground();
 
     // update size
-    this._refreshPosition();
-    this._refreshSize();
+    this.refreshPosition();
+    this.refreshSize();
   }
 
-  _refreshBackground() {
+  refreshBackground() {
     if (this.selected) {
       this.background.style.fill = this.selectedBackgroundColor;
       this.background.style.stroke = this.selectedBorderColor;
@@ -64,11 +64,11 @@ class Node {
     }
   }
 
-  _refreshPosition() {
+  refreshPosition() {
     this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
   }
 
-  _refreshSize() {
+  refreshSize() {
 
   }
 
@@ -101,15 +101,14 @@ class Node {
 
   render() {
     var minHeight = (Math.max(this.inputs.length, this.outputs.length) * 15) + 5;
-    var calculatedHeight = Math.max(minHeight, this.height);
+    this.height = Math.max(minHeight, this.height);
 
     // container
     this.element = FlowJS.Tools.GenerateSVG('g', {
       'width': this.width,
-      'height': calculatedHeight,
+      'height': this.height,
       'transform': `translate(${this.x}, ${this.y})`
     });
-    this.element.style.zIndex = 50;
 
     this._renderBackground();
 
@@ -127,7 +126,7 @@ class Node {
   _renderBackground() {
     var backgroundRectangle = FlowJS.Tools.GenerateSVG('rect', {
       'width': this.width,
-      'height': this.element.getAttribute('height'),
+      'height': this.height,
       'x': 0,
       'y': 0,
       'rx': 5,
@@ -137,7 +136,7 @@ class Node {
 
     this.background = backgroundRectangle;
 
-    backgroundRectangle.style.strokeWidth = FlowJS.Config.NodeBorderThickness + 'px';
+    backgroundRectangle.style.strokeWidth = FlowJS.Config.Node.Thickness + 'px';
     backgroundRectangle.style.fill = this.backgroundColor;
     backgroundRectangle.style.stroke = this.borderColor;
   }
@@ -155,7 +154,7 @@ class Node {
       'x': 10,
       'y': 0,
       'width': this.width - 20,
-      'height': this.element.getAttribute('height')  
+      'height': this.height  
     });
     clippingArea.appendChild(clippingRectangle);
 
@@ -169,7 +168,7 @@ class Node {
     var titleText = FlowJS.Tools.GenerateSVG('text', {
       'x': 10,
       'y': 20,
-      'font-size': FlowJS.Config.FontSize,
+      'font-size': FlowJS.Config.Font.Size,
       'font-weight': 'bold',
       'color': 'blue'
     });
@@ -180,8 +179,8 @@ class Node {
     // subtitle
     var subtitleText = FlowJS.Tools.GenerateSVG('text', {
       'x': 10,
-      'y': 20 + FlowJS.Config.FontSize,
-      'font-size': FlowJS.Config.FontSize,
+      'y': 20 + FlowJS.Config.Font.Size,
+      'font-size': FlowJS.Config.Font.Size,
     });
     textArea.appendChild(subtitleText);
 
@@ -193,8 +192,8 @@ class Node {
       'x': 0,
       'y': 0,      
       'width': this.width,
-      'height': this.element.getAttribute('height'),
-      'cursor': FlowJS.Config.NodeCursor
+      'height': this.height,
+      'cursor': FlowJS.Config.Node.Cursor
     });
     this.element.appendChild(actionArea);
 
@@ -203,25 +202,19 @@ class Node {
     actionArea.designer = this.designer;
 
     actionArea.addEventListener('mousedown', (e) => {
+      var position = FlowJS.Tools.GetPosition(e);
       var designer = e.target.designer;
       var node = e.target.node;
 
-      if (e.ctrlKey) {
-        if (node.selected) {
-          designer.removeSelectedNode(node);
-        } else {
-          designer.addSelectedNode(node);
-        }
-      } else {
-        node.selected = true;
-        node.refresh();
+      designer.nodeMovementHandler.activeNode = node;
+      designer.nodeMovementHandler.keepSelected = node.selected;
 
-        node.initialX = node.x;
-        node.initialY = node.y;
-
-        designer.activeNode = node;
-        designer.mouseMode = FlowJS.MouseMode.Node;
+      if (node.selected == false) {
+        designer.nodeMovementHandler.setSelection([ node ]);
       }
+
+      designer.nodeMovementHandler.start(position);
+      FlowJS.Tools.BringToFront(designer._nodeContainer, node.element);      
     });
   }
 
@@ -231,12 +224,18 @@ class Node {
 
       connection.node = this;
       connection.designer = this.designer;
+      connection.type = FlowJS.ConnectorType.Input;
 
       var connectionElement = connection.render();
       this.element.appendChild(connectionElement);
 
+      connection.offsetX = 0;
+      connection.offsetY = 10 + (i * 15);
+
       connectionElement.setAttribute('x', -5);
       connectionElement.setAttribute('y', 5 + (i * 15));
+
+      this.designer.registerConnection(connection);      
     }
   }
 
@@ -246,12 +245,24 @@ class Node {
 
       connection.node = this;
       connection.designer = this.designer;
+      connection.type = FlowJS.ConnectorType.Output;
 
       var connectionElement = connection.render();
       this.element.appendChild(connectionElement);
 
+      connection.offsetX = this.width;
+      connection.offsetY = 10 + (i * 15);
+
       connectionElement.setAttribute('x', this.width - 5);
       connectionElement.setAttribute('y', 5 + (i * 15));
+
+      this.designer.registerConnection(connection);
     }
+  }
+
+  inRectangle(xi, yi, xf, yf) {
+    var centerX = this.x + (this.width / 2);
+    var cetnerY = this.y + (this.height / 2)
+    return (centerX >= xi && cetnerY >= yi && centerX <= xf && cetnerY <= yf);
   }
 }

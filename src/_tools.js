@@ -39,18 +39,17 @@ FlowJS.Tools = {
     style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = 
-     `.noselect {
-        -webkit-touch-callout: none; /* iOS Safari */
-          -webkit-user-select: none; /* Safari */
-           -khtml-user-select: none; /* Konqueror HTML */
-             -moz-user-select: none; /* Firefox */
-              -ms-user-select: none; /* Internet Explorer/Edge */
-                  user-select: none; /* Non-prefixed version, currently
-                                        supported by Chrome and Opera *
+     `.FlowJS_NoSelect {
+        -webkit-touch-callout: none;
+          -webkit-user-select: none;
+           -khtml-user-select: none;
+             -moz-user-select: none;
+              -ms-user-select: none;
+                  user-select: none;
       }`;
     document.getElementsByTagName('head')[0].appendChild(style);
 
-    FlowJS.Tools._noSelect = 'noselect';
+    FlowJS.Tools._noSelect = 'FlowJS_NoSelect';
 
     return FlowJS.Tools._noSelect;
   },
@@ -61,17 +60,17 @@ FlowJS.Tools = {
       i++;
     }
 
-    if (i == e.path.length) return;
+    if (i == e.path.length) return undefined;
     var designer = e.path[i].designer;
 
-    var x = e.x + designer.container.scrollLeft;
-    var y = e.y + designer.container.scrollTop;
+    var x = e.offsetX;
+    var y = e.offsetY;
 
     x /= designer.scale;
     y /= designer.scale;
 
-    var dx = designer.mouseInitialX - x;
-    var dy = designer.mouseInitialY - y;
+    var dx = designer.initialX - x;
+    var dy = designer.initialY - y;
 
     return {
       x: x,
@@ -80,5 +79,14 @@ FlowJS.Tools = {
       dy: dy,
       designer: designer
     }
+  },
+
+  SelectRandom: (items) => {
+    return items[Math.floor(Math.random() * items.length)];
+  },
+
+  BringToFront: (container, element) => {
+    container.removeChild(element);
+    container.appendChild(element);
   }
 }

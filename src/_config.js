@@ -11,35 +11,65 @@ FlowJS.ConnectorType = {
   Output: 'Output',
 }
 
-FlowJS.MouseMode = {
+FlowJS.GridStyle = {
   None: 'None',
-  Selection: 'Selection',
-  Node: 'Node',
-  SelectionNodes: 'SelectionNodes',
-  Link: 'Link',
+  Line: 'Line',
+  Dot: 'Dot',
+}
+
+FlowJS.LinkStyle = {
+  Custom: 'Custom',
+  Direct: 'Direct',
+  Spline: 'Spline',
 }
 
 FlowJS.Config = {
-  LinkThickness: 5,
-  LinkCurveFactor: 5,
+  Grid: {
+    Style: FlowJS.GridStyle.Line,
+    Thickness: 0.4,
+    Enabled: true,
+    Size: 25,
+    Snap: true,
+    Cursor: 'crosshair',
+  },
 
-  NodeBorderThickness: 2,
-  NodeCursor: 'crosshair',
-  
-  ConnectorStyle: FlowJS.ConnectorStyle.Square,
-  ConnectorFill: false,
-  ConnectorCursor: 'crosshair',
-  
-  GridSize: 25,
-  GridEnabled: true,
-  GridSnap: true,
-  GridCursor: 'crosshair',
-  
-  ScaleMinimum: 0.2,
-  ScaleMaximum: 5,
-  
-  ControlsEnabled: true,
-  
-  FontFamily: '"Lucida Console", Monaco, monospace',
-  FontSize: 14,
+  Node: {
+    Thickness: 2,
+    Cursor: 'crosshair',
+  },
+
+  Connector: {
+    Style: FlowJS.ConnectorStyle.Square,
+    Fill: false,
+    Cursor: 'crosshair'
+  },
+
+  Link: {
+    Style: FlowJS.LinkStyle.Spline,
+
+    Thickness: 3,
+    InitialLength: 20,
+    Angle: 45,
+
+    Shadow: {
+      Enabled: true,
+      Thickness: 8,
+      Opacity: 0.2,
+      Color: false,
+    }
+  },
+
+  Scale: {
+    Minimum: 0.2,
+    Maximum: 5,
+  },
+
+  Controls: {
+    Enabled: true,    
+  },
+
+  Font: {
+    Family: '"Lucida Console", Monaco, monospace',
+    Size: 14,
+  },
 }

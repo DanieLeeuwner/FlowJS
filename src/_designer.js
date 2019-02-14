@@ -5,6 +5,7 @@ class Designer {
   constructor(data) {
 
     this.container = data.container;
+    this.designContainer = undefined;
     
     this.theme = data.theme || FlowJS.Theme.Light;
 
@@ -15,20 +16,19 @@ class Designer {
 
     this.nodes = [];
     this.links = [];
+    this.connections = {};
 
-    this.mouseMode = FlowJS.MouseMode.None;
-    this.mouseInitialX = 0;
-    this.mouseInitialY = 0;
+    this.activeMovementHandler = undefined;
 
-    this.activeNode = undefined;
-    this.activeSelectionNodes = [];
-    this.activeConnector = undefined;
-    this.activeLink = undefined;
+    this.selectionMovementHandler = new SelectionMovementHandler(this);
+    this.nodeMovementHandler = new NodeMovementHandler(this);
+    this.connectorMovementHandler = new ConnectorMovementHandler(this);
 
     this.callbacks = {
       linkCreated: undefined,
       linkDeleted: undefined,
       nodeSelected: undefined,
+      nodeUnselected: undefined,
       nodeOpened: undefined,
       nodeDeleted: undefined,
       nodeMoved: undefined,
@@ -38,6 +38,7 @@ class Designer {
       this.callbacks.linkCreated = data.callbacks.linkCreated || undefined;
       this.callbacks.linkDeleted = data.callbacks.linkDeleted || undefined;
       this.callbacks.nodeSelected = data.callbacks.nodeSelected || undefined;
+      this.callbacks.nodeUnselected = data.callbacks.nodeUnselected || undefined;
       this.callbacks.nodeOpened = data.callbacks.nodeOpened || undefined;
       this.callbacks.nodeDeleted = data.callbacks.nodeDeleted || undefined;
       this.callbacks.nodeMoved = data.callbacks.nodeMoved || undefined;
@@ -58,8 +59,8 @@ class Designer {
     this._g = undefined;
     this._svg = undefined;
     this._nodeContainer = undefined;
+    this._linkContainer = undefined;
     this._gridContainer = undefined;
-    this._selectionRectangle = undefined;
 
     this.updateTheme();
 
@@ -87,141 +88,64 @@ class Designer {
 
   initializeContainer() {
     this.container.innerHTML = '';
-    this.container.style.overflow = 'scroll';
-
+    this.container.style.overflow = 'hidden';
+    this.container.style.position = 'relative';
     this.container.className += FlowJS.Tools.NoSelect();
 
+    this.designContainer = document.createElement('div');
+    this.container.appendChild(this.designContainer);
+
+    this.designContainer.style.overflow = 'scroll';
+    this.designContainer.style.position = 'absolute';
+    this.designContainer.style.width = '100%';
+    this.designContainer.style.height = '100%';
+
     this._svg = FlowJS.Tools.GenerateSVG('svg', {
-      'font-family': FlowJS.Config.FontFamily,
-      'cursor': FlowJS.Config.GridCursor
+      'font-family': FlowJS.Config.Font.Family,
+      'cursor': FlowJS.Config.Grid.Cursor
     });
-    this.container.appendChild(this._svg);
+    this.designContainer.appendChild(this._svg);
 
     this._svg.designer = this;
     this._svg.isBackground = true;
 
-    this._svg.addEventListener('mousedown', this.mouseDown);
-    this._svg.addEventListener('mousemove', this.mouseMove);
-    this._svg.addEventListener('mouseup', this.mouseUp);
+    this._svg.addEventListener('mousedown', FlowJS.Movement.MouseDown);
+    this._svg.addEventListener('mousemove', FlowJS.Movement.MouseMove);
+    document.addEventListener('mouseup', FlowJS.Movement.MouseUp);
+
+    this._defs = FlowJS.Tools.GenerateSVG('defs');
+    this._svg.appendChild(this._defs);
 
     this._g = FlowJS.Tools.GenerateSVG('g');
     this._svg.appendChild(this._g);
 
-    this._gridContainer = FlowJS.Tools.GenerateSVG('g');
+    this._gridContainer = FlowJS.Tools.GenerateSVG('rect');
     this._g.appendChild(this._gridContainer);
+
+    this._linkContainer = FlowJS.Tools.GenerateSVG('g');
+    this._g.appendChild(this._linkContainer);
 
     this._nodeContainer = FlowJS.Tools.GenerateSVG('g');
     this._g.appendChild(this._nodeContainer);
 
+    var containerBox = this.container.getBoundingClientRect();
+
+    var watermarkText = document.createElement('div');
+    this.container.appendChild(watermarkText);
+
+    watermarkText.style.position = 'absolute';
+    watermarkText.style.fontSize = '20px';
+    watermarkText.style.fontWeight = 'bold';
+    watermarkText.style.zIndex = 100000;
+    watermarkText.style.right = '27px';
+    watermarkText.style.top = 'calc(100% - 20px - 10px - 17px)';
+    watermarkText.style.fontFamily = 'Verdana,Geneva,sans-serif';
+    watermarkText.style.pointerEvents = 'none';
+    watermarkText.style.color = this.theme.Watermark;
+    watermarkText.innerHTML = 'FlowJS';
+
     this.refreshGrid();
     this.refresh();
-  }
-
-  mouseDown(e) {
-    var position = FlowJS.Tools.GetPosition(e);
-    var designer = position.designer;
-
-    designer.mouseInitialX = position.x;
-    designer.mouseInitialY = position.y;
-
-    if (e.target.isBackground) {
-      designer.mouseMode = FlowJS.MouseMode.Selection;
-
-      designer._selectionRectangle = FlowJS.Tools.GenerateSVG('rect', {
-
-      });
-
-      designer._selectionRectangle.fill = designer.theme.SelectionBackground;
-      designer._selectionRectangle.stroke = designer.theme.SelectionBorder;
-      designer._selectionRectangle.strokeWidth = '1px';
-    }    
-  }
-
-  mouseMove(e) {
-    var position = FlowJS.Tools.GetPosition(e);
-    var designer = position.designer;
-
-    switch (designer.mouseMode) {
-      case FlowJS.MouseMode.Selection:
-        designer.mouseMoveSelectionRectangle(position);
-        break;
-
-      case FlowJS.MouseMode.Node:
-        designer.mouseMoveNode(position);
-        break;
-
-      case FlowJS.MouseMode.Link:
-        designer.mouseMoveLink(position);
-        break;
-    }
-  }
-
-  mouseMoveSelectionRectangle(position) {
-
-  }
-
-  mouseMoveNode(position) {
-    this.activeNode.x = this.activeNode.initialX - position.dx;
-    this.activeNode.y = this.activeNode.initialY - position.dy;
-    this.activeNode.refresh();
-  }
-
-  mouseMoveLink(position) {
-
-  }
-
-  mouseUp(e) {
-    var position = FlowJS.Tools.GetPosition(e);
-    var designer = position.designer;
-
-    /*
-    if (position.dy == 0 && position.dx == 0) {
-      // deselect / cancel
-      for (var i = 0; i < designer.activeNodes.length; i++) {
-        var node = designer.activeNodes[i];
-        node.selected = false;
-        node.refresh();
-      }
-      return;
-    }
-    */
-
-    switch (designer.mouseMode) {
-      case FlowJS.MouseMode.Selection:
-        designer.mouseUpSelectionRectangle(position);
-        break;
-
-      case FlowJS.MouseMode.Node:
-        designer.mouseUpNode(position);
-        break;
-
-      case FlowJS.MouseMode.Link:
-        designer.mouseUpLink(position);
-        break;
-    }
-  }
-
-  mouseUpSelectionRectangle(position) {
-
-  }
-
-  mouseUpNode(position) {
-    var node = designer.activeNode;
-    designer.activeNode = undefined;
-
-    if (FlowJS.Config.GridSnap) {
-      node.x = Math.round(node.x / FlowJS.Config.GridSize) * FlowJS.Config.GridSize;
-      node.y = Math.round(node.y / FlowJS.Config.GridSize) * FlowJS.Config.GridSize;
-    }
-
-    node.selected = false;
-    node.refresh();
-
-    designer.mouseMode = FlowJS.MouseMode.None;
-  }
-
-  mouseUpLink(position) {
-
   }
 
   refresh() {
@@ -229,8 +153,8 @@ class Designer {
   }
 
   refreshGrid() {
-    if (this.scale < FlowJS.Config.ScaleMinimum) this.scale = FlowJS.Config.ScaleMinimum;
-    if (this.scale > FlowJS.Config.ScaleMaximum) this.scale = FlowJS.Config.ScaleMaximum;
+    if (this.scale < FlowJS.Config.Scale.Minimum) this.scale = FlowJS.Config.Scale.Minimum;
+    if (this.scale > FlowJS.Config.Scale.Maximum) this.scale = FlowJS.Config.Scale.Maximum;
 
     this._svg.style.backgroundColor = this.theme.Background;
 
@@ -243,36 +167,89 @@ class Designer {
     this._g.setAttribute('transform', 'scale(' + this.scale + ')');
 
     var grid = this._gridContainer;
-    this._gridContainer = FlowJS.Tools.GenerateSVG('g');
+    this._gridContainer = FlowJS.Tools.GenerateSVG('rect', {
+      'fill': 'none',
+      'width': this.width,
+      'height': this.height,
+    });
     grid.parentNode.replaceChild(this._gridContainer, grid);
+    this._gridContainer.isBackground = true;
+    this._gridContainer.designer = this;
 
-    if (FlowJS.Config.GridEnabled) {
-      var horizontalCount = this.width / FlowJS.Config.GridSize;
-
-      for (var i = 1; i < horizontalCount; i++) {
-        var line = FlowJS.Tools.GenerateSVG('line', {
-          "x1": i * FlowJS.Config.GridSize,
-          "x2": i * FlowJS.Config.GridSize,
-          "y1": 0,
-          "y2": this.height,
-        });
-
-        this._populateLineDetails(line);
-      }
-
-      var verticalCount = this.height / FlowJS.Config.GridSize;
-
-      for (var i = 1; i < verticalCount; i++) {
-        var line = FlowJS.Tools.GenerateSVG('line', {
-          "x1": 0,
-          "x2": this.width,
-          "y1": i * FlowJS.Config.GridSize,
-          "y2": i * FlowJS.Config.GridSize,
-        });
-
-        this._populateLineDetails(line);
+    if (FlowJS.Config.Grid.Enabled) {
+      switch (FlowJS.Config.Grid.Style) {
+        case FlowJS.GridStyle.Line:
+          this._refreshGridLines();
+          break;
+        case FlowJS.GridStyle.Dot:
+          this._refreshGridDots();
+          break;
       }
     }
+
+    this._gridContainer.setAttribute('fill', 'url(#GridPattern)');
+  }
+
+  _refreshGridLines() {
+    if (this._gridPattern) {
+      this._defs.removeChild(this._gridPattern);
+    }
+
+    this._gridPattern = FlowJS.Tools.GenerateSVG('pattern', {
+      'id': 'GridPattern',
+      'x': 0,
+      'y': 0,
+      'width': (FlowJS.Config.Grid.Size / this.width),
+      'height': (FlowJS.Config.Grid.Size / this.height),
+      'patternUnits': 'objectBoundingBox'
+    });
+    this._defs.appendChild(this._gridPattern);
+
+    var grid = FlowJS.Tools.GenerateSVG('path', {
+      'd': `M${FlowJS.Config.Grid.Size} ${0} L${FlowJS.Config.Grid.Size} ${FlowJS.Config.Grid.Size} ${0} ${FlowJS.Config.Grid.Size}`
+    });
+
+    this._gridPattern.appendChild(grid);
+
+    grid.style.fill = 'none';
+    grid.style.strokeWidth = 2;
+    grid.style.stroke = this.theme.Grid;
+
+    grid.isBackground = true;
+    grid.designer = this;
+  }
+
+  _refreshGridDots() {
+    if (this._gridPattern) {
+      this._defs.removeChild(this._gridPattern);
+    }
+
+    this._gridPattern = FlowJS.Tools.GenerateSVG('pattern', {
+      'id': 'GridPattern',
+      'x': 0,
+      'y': 0,
+      'width': (FlowJS.Config.Grid.Size / this.width),
+      'height': (FlowJS.Config.Grid.Size / this.height),
+      'patternUnits': 'objectBoundingBox'
+    });
+    this._defs.appendChild(this._gridPattern);
+
+    var dot = FlowJS.Tools.GenerateSVG('rect', {
+      'x': FlowJS.Config.Grid.Size,
+      'y': FlowJS.Config.Grid.Size,
+      'width': 1,
+      'height': 1,
+    });
+
+    this._gridPattern.appendChild(dot);
+
+    dot.style.strokeWidth = 4;
+    dot.style.stroke = this.theme.Grid;
+
+    dot.isBackground = true;
+    dot.designer = this;
+
+    this._gridContainer.setAttribute('fill', 'url(#GridPattern)');
   }
 
   _populateLineDetails(line) {
@@ -299,15 +276,72 @@ class Designer {
   }
 
   refreshLinks() {
+    var links = this._linkContainer;
+    this._linkContainer = FlowJS.Tools.GenerateSVG('g');
+    links.parentNode.replaceChild(this._linkContainer, links);
 
+    for (var i = 0; i < this.links.length; i++) {
+      var link = this.links[i];
+      this.displayLink(link);
+    }
   }
 
-  refreshNodeStates() {
+  // refresh link data points
+  refreshLinkData(link) {
+    var source = link.sourceConnector;
+    var target = link.targetConnector;
 
+    var type = source.type;
+    var sourcePosition = source.getPosition();
+    var targetPosition = target.getPosition();
+
+    var data = undefined;
+
+    switch (FlowJS.Config.Link.Style) {
+      case FlowJS.LinkStyle.Custom:
+        data = FlowJS.PathTools.GetDataCustom(type, sourcePosition, targetPosition);
+        break;
+      case FlowJS.LinkStyle.Direct:
+        data = FlowJS.PathTools.GetDataDirect(type, sourcePosition, targetPosition);
+        break;
+      case FlowJS.LinkStyle.Spline:
+        data = FlowJS.PathTools.GetDataSpline(type, sourcePosition, targetPosition);      
+        break;
+    }
+
+    if (FlowJS.Config.Link.Shadow.Enabled) {
+      link.shadowElement.setAttribute('d', data);
+    }
+
+    link.element.setAttribute('d', data);
+    link.overlay.setAttribute('d', data);
   }
 
-  refreshLinkStates() {
+  // refresh all links linked to nodes
+  refreshNodeLinks(nodes) {
+    var refreshedLinks = {};
 
+    for (var i = 0; i < this.links.length; i++) {
+      var link = this.links[i];
+      // link already refreshed
+      if (refreshedLinks[link.id]) continue;
+
+      var sourceNode = link.sourceConnector.node;
+      var targetNode = link.targetConnector.node;
+
+      // if link node is in provided nodes
+      if (nodes.indexOf(sourceNode) != -1 || nodes.indexOf(targetNode) != -1) {
+        this.refreshLinkData(link);
+        refreshedLinks[link.id] = true;
+      }
+    }
+  }
+
+  refreshNodeSelectionStates() {
+    for (var i = 0; i < this.nodes.length; i++) {
+      var node = this.nodes[i];
+      node.refreshBackground();
+    }
   }
 
   export() {
@@ -339,23 +373,84 @@ class Designer {
     this._nodeContainer.appendChild(nodeElement);
   }
 
-  addSelectedNode(node) {
-    var index = this.activeSelectionNodes.indexOf(node);
-    if (index == -1) {
-      this.activeSelectionNodes.push(node);
+  createLink(source, target, data) {
+    for (var i = 0; i < this.links.length; i++) {
+      var link = this.links[i];
+      if (link.source == source && link.target == target) {
+        return;
+      }
     }
 
-    node.selected = true;
-    node.refresh();
+    data.designer = this;
+    var link = new Link(source, target, data);
+
+    this.links.push(link);
+    this.displayLink(link);
   }
 
-  removeSelectedNode(node) {
-    var index = this.activeSelectionNodes.indexOf(node);
-    if (index != -1) {
-      this.activeSelectionNodes.splice(index, 1);
+  displayLink(link) {
+    var stroke = link.stroke || FlowJS.Tools.SelectRandom(this.theme.Link);
+    var thickness = FlowJS.Config.Link.Thickness;
+    var shadowThickness = FlowJS.Config.Link.Shadow.Thickness;
+    var shadowOpacity = FlowJS.Config.Link.Shadow.Opacity;
+
+    if (FlowJS.Config.Link.Shadow.Enabled) {
+      link.shadowElement = FlowJS.Tools.GenerateSVG('path');
+      this._linkContainer.appendChild(link.shadowElement);
+
+      link.shadowElement.style.stroke = FlowJS.Config.Link.Shadow.Color || stroke;
+      link.shadowElement.style.fill = 'none';
+      link.shadowElement.style.strokeOpacity = shadowOpacity;
+      link.shadowElement.style.strokeWidth = shadowThickness; 
     }
 
-    node.selected = false;
-    node.refresh();
+    link.element = FlowJS.Tools.GenerateSVG('path');
+    this._linkContainer.appendChild(link.element);
+
+    link.element.style.stroke = stroke;
+    link.element.style.fill = 'none';
+    link.element.style.strokeWidth = thickness;
+
+    link.overlay = FlowJS.Tools.GenerateSVG('path');
+    this._linkContainer.appendChild(link.overlay);
+
+    link.overlay.style.stroke = 'rgba(0,0,0,0)';
+    link.overlay.style.fill = 'none';
+    link.overlay.style.strokeWidth = Math.max(thickness + 2, shadowThickness);
+
+    link.overlay.link = link;
+
+    link.overlay.addEventListener('mouseover', (e) => {
+      var link = e.target.link;
+      var designer = link.designer;
+
+      if (designer.activeMovementHandler != undefined) return;
+
+      link.element.style.stroke = 'orange';
+
+
+      if (FlowJS.Config.Link.Shadow.Enabled) {
+        FlowJS.Tools.BringToFront(designer._linkContainer, link.shadowElement);
+      }
+      FlowJS.Tools.BringToFront(designer._linkContainer, link.element);
+      FlowJS.Tools.BringToFront(designer._linkContainer, link.overlay);
+
+      link.sourceConnector.focus();
+      link.targetConnector.focus();
+    });
+
+    link.overlay.addEventListener('mouseout', (e) => {
+      var link = e.target.link;
+      link.element.style.stroke = link.stroke;
+
+      link.sourceConnector.unfocus();
+      link.targetConnector.unfocus();
+    });
+
+    this.refreshLinkData(link);
+  }
+
+  registerConnection(connection) {
+    this.connections[connection.getId()] = connection;
   }
 }
