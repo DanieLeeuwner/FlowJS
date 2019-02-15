@@ -54,14 +54,19 @@ FlowJS.Tools = {
     return FlowJS.Tools._noSelect;
   },
 
-  GetPosition: (e) => {
+  GetDesigner: (e) => {
     var i = 0;
     while (i < e.path.length && e.path[i].designer == undefined) {
       i++;
     }
 
     if (i == e.path.length) return undefined;
-    var designer = e.path[i].designer;
+    return e.path[i].designer;
+  },
+
+  GetPosition: (e) => {
+    var designer = FlowJS.Tools.GetDesigner(e);
+    if (designer == undefined) return;
 
     var x = e.offsetX;
     var y = e.offsetY;

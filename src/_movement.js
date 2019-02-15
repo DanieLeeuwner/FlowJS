@@ -5,8 +5,12 @@ var FlowJS = FlowJS || {};
 FlowJS.Movement = {
   MouseDown: (e) => {
     var position = FlowJS.Tools.GetPosition(e);
-    if (position == undefined) return;
+    if (position == undefined) {
+      FlowJS.Input.UnfocusDesigner();
+      return;
+    }
     var designer = position.designer;
+    FlowJS.Input.FocusDesigner(designer);
 
     designer.initialX = position.x;
     designer.initialY = position.y;

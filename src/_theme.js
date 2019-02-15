@@ -39,6 +39,7 @@ FlowJS.Theme = {
   Light: {
     Grid: '#CCC',
     Background: '#FFF',
+    Focus: 'orange',
     SelectionBackground: 'rgba(100, 100, 100, 0.2)',
     SelectionBorder: 'rgba(100, 100, 100, 0.8)',
     Link: FlowJS.Palette.DefaultLight,
@@ -49,9 +50,10 @@ FlowJS.Theme = {
   Dark: {
     Grid: '#333',
     Background: '#222',
+    Focus: 'orange',
     SelectionBackground: 'rgba(200, 200, 200, 0.2)',
     SelectionBorder: 'rgba(200, 200, 200, 0.8)',
-    Link: FlowJS.Palette.Pastel,
+    Link: FlowJS.Palette.DefaultDark,
     ConnectorBorder: '#DDD',
     ConnectorFill: '#FFF',
     Watermark: 'rgba(175, 175, 175, 0.2)',

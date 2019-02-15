@@ -26,7 +26,7 @@ FlowJS.LinkStyle = {
 FlowJS.Config = {
   Grid: {
     Style: FlowJS.GridStyle.Line,
-    Thickness: 0.4,
+    Thickness: 2,
     Enabled: true,
     Size: 25,
     Snap: true,

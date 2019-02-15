@@ -16,6 +16,8 @@ class SelectionMovementHandler extends MovementHandler {
     this.element.style.fill = this.designer.theme.SelectionBackground;
     this.element.style.stroke = this.designer.theme.SelectionBorder;
     this.element.style.strokeWidth = '0.5px';
+
+    this.designer.linkMovementHandler.unfocus();
   }
 
   update(position) {

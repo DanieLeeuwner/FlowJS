@@ -23,22 +23,18 @@ class Node {
     this.initialX = 0;
     this.initialY = 0;
 
-    this.data = data || {};
+    this.data = data.data || {};
 
     this.backgroundColor = data.backgroundColor || '#bfbfbf';
     this.foregroundColor = data.foregroundColor || '#000';
     this.borderColor = data.borderColor || '#909090';
-
-    this.selectedBackgroundColor = data.selectedBackgroundColor || this.backgroundColor;
-    this.selectedForegroundColor = data.selectedForegroundColor || this.foregroundColor; 
-    this.selectedBorderColor = data.selectedBorderColor || 'orange';
 
     this.inputs = data.inputs || [];
     this.outputs = data.outputs || [];
 
     this.element = undefined;
 
-    this.designer = undefined;
+    this.designer = data.designer;
   }
 
   refresh() {
@@ -56,8 +52,7 @@ class Node {
 
   refreshBackground() {
     if (this.selected) {
-      this.background.style.fill = this.selectedBackgroundColor;
-      this.background.style.stroke = this.selectedBorderColor;
+      this.background.style.stroke = this.designer.theme.Focus;
     } else {
       this.background.style.fill = this.backgroundColor;
       this.background.style.stroke = this.borderColor;
@@ -208,9 +203,16 @@ class Node {
 
       designer.nodeMovementHandler.activeNode = node;
       designer.nodeMovementHandler.keepSelected = node.selected;
-
+      
       if (node.selected == false) {
-        designer.nodeMovementHandler.setSelection([ node ]);
+        var nodes = designer.nodeMovementHandler.nodes;
+        if (e.ctrlKey) {
+          nodes.push(node);
+        } else {
+          nodes = [ node ];
+        }
+        designer.nodeMovementHandler.setSelection(nodes);
+        designer.nodeMovementHandler.keepSelected = e.ctrlKey;
       }
 
       designer.nodeMovementHandler.start(position);
@@ -234,8 +236,6 @@ class Node {
 
       connectionElement.setAttribute('x', -5);
       connectionElement.setAttribute('y', 5 + (i * 15));
-
-      this.designer.registerConnection(connection);      
     }
   }
 
@@ -255,8 +255,6 @@ class Node {
 
       connectionElement.setAttribute('x', this.width - 5);
       connectionElement.setAttribute('y', 5 + (i * 15));
-
-      this.designer.registerConnection(connection);
     }
   }
 
@@ -264,5 +262,9 @@ class Node {
     var centerX = this.x + (this.width / 2);
     var cetnerY = this.y + (this.height / 2)
     return (centerX >= xi && cetnerY >= yi && centerX <= xf && cetnerY <= yf);
+  }
+
+  destroy() {
+    this.designer._nodeContainer.removeChild(this.element);
   }
 }

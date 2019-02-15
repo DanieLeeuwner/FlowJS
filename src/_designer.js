@@ -19,10 +19,15 @@ class Designer {
     this.connections = {};
 
     this.activeMovementHandler = undefined;
-
     this.selectionMovementHandler = new SelectionMovementHandler(this);
     this.nodeMovementHandler = new NodeMovementHandler(this);
     this.connectorMovementHandler = new ConnectorMovementHandler(this);
+    this.linkMovementHandler = new LinkMovementHandler(this);
+
+    this.activeInputHandler = undefined;
+    this.baseInputHandler = new BaseInputHandler(this);
+    this.nodeInputHandler = new NodeInputHandler(this);
+    this.linkInputHandler = new LinkInputHandler(this);
 
     this.callbacks = {
       linkCreated: undefined,
@@ -112,6 +117,8 @@ class Designer {
     this._svg.addEventListener('mousedown', FlowJS.Movement.MouseDown);
     this._svg.addEventListener('mousemove', FlowJS.Movement.MouseMove);
     document.addEventListener('mouseup', FlowJS.Movement.MouseUp);
+
+    this.container.addEventListener('keydown', FlowJS.Input.KeyPress);
 
     this._defs = FlowJS.Tools.GenerateSVG('defs');
     this._svg.appendChild(this._defs);
@@ -212,7 +219,7 @@ class Designer {
     this._gridPattern.appendChild(grid);
 
     grid.style.fill = 'none';
-    grid.style.strokeWidth = 2;
+    grid.style.strokeWidth = FlowJS.Config.Grid.Thickness;
     grid.style.stroke = this.theme.Grid;
 
     grid.isBackground = true;
@@ -237,8 +244,8 @@ class Designer {
     var dot = FlowJS.Tools.GenerateSVG('rect', {
       'x': FlowJS.Config.Grid.Size,
       'y': FlowJS.Config.Grid.Size,
-      'width': 1,
-      'height': 1,
+      'width': FlowJS.Config.Grid.Thickness,
+      'height': FlowJS.Config.Grid.Thickness,
     });
 
     this._gridPattern.appendChild(dot);
@@ -286,37 +293,6 @@ class Designer {
     }
   }
 
-  // refresh link data points
-  refreshLinkData(link) {
-    var source = link.sourceConnector;
-    var target = link.targetConnector;
-
-    var type = source.type;
-    var sourcePosition = source.getPosition();
-    var targetPosition = target.getPosition();
-
-    var data = undefined;
-
-    switch (FlowJS.Config.Link.Style) {
-      case FlowJS.LinkStyle.Custom:
-        data = FlowJS.PathTools.GetDataCustom(type, sourcePosition, targetPosition);
-        break;
-      case FlowJS.LinkStyle.Direct:
-        data = FlowJS.PathTools.GetDataDirect(type, sourcePosition, targetPosition);
-        break;
-      case FlowJS.LinkStyle.Spline:
-        data = FlowJS.PathTools.GetDataSpline(type, sourcePosition, targetPosition);      
-        break;
-    }
-
-    if (FlowJS.Config.Link.Shadow.Enabled) {
-      link.shadowElement.setAttribute('d', data);
-    }
-
-    link.element.setAttribute('d', data);
-    link.overlay.setAttribute('d', data);
-  }
-
   // refresh all links linked to nodes
   refreshNodeLinks(nodes) {
     var refreshedLinks = {};
@@ -331,7 +307,7 @@ class Designer {
 
       // if link node is in provided nodes
       if (nodes.indexOf(sourceNode) != -1 || nodes.indexOf(targetNode) != -1) {
-        this.refreshLinkData(link);
+        link.refresh();
         refreshedLinks[link.id] = true;
       }
     }
@@ -357,6 +333,7 @@ class Designer {
     // Calculate X and Y position
     data.x = data.x + (this.container.scrollLeft / this.scale);
     data.y = data.y + (this.container.scrollTop / this.scale);
+    data.designer = this;
 
     var node = new Node(data);
     this.nodes.push(node);
@@ -373,6 +350,47 @@ class Designer {
     this._nodeContainer.appendChild(nodeElement);
   }
 
+  deleteSelectedNodes() {
+    this.linkMovementHandler.unfocus();
+
+    var deleteNodes = [];
+    for (var i = 0; i < this.nodes.length; i++) {
+      var node = this.nodes[i];
+      if (node.selected) {
+        deleteNodes.push(node);
+      }
+    }
+
+    for (var i = 0; i < deleteNodes.length; i++) {
+      var node = deleteNodes[i];
+      var index = this.nodes.indexOf(node);
+
+      this.nodes.splice(index, 1);
+      node.destroy();
+    }
+
+    var deleteLinks = [];
+
+    for (var i = 0; i < this.links.length; i++) {
+      var link = this.links[i];
+
+      var sourceNode = link.sourceConnector.node;
+      var targetNode = link.targetConnector.node;
+
+      if (deleteNodes.indexOf(sourceNode) != -1 || deleteNodes.indexOf(targetNode) != -1) {
+        deleteLinks.push(link);
+      }
+    }
+
+    for (var i = 0; i < deleteLinks.length; i++) {
+      var link = deleteLinks[i];
+      var index = this.links.indexOf(link);
+
+      this.links.splice(index, 1);
+      link.destroy();
+    }
+  }
+
   createLink(source, target, data) {
     for (var i = 0; i < this.links.length; i++) {
       var link = this.links[i];
@@ -382,75 +400,22 @@ class Designer {
     }
 
     data.designer = this;
+
     var link = new Link(source, target, data);
-
     this.links.push(link);
-    this.displayLink(link);
+
+    link.render();
+    link.refresh();
   }
 
-  displayLink(link) {
-    var stroke = link.stroke || FlowJS.Tools.SelectRandom(this.theme.Link);
-    var thickness = FlowJS.Config.Link.Thickness;
-    var shadowThickness = FlowJS.Config.Link.Shadow.Thickness;
-    var shadowOpacity = FlowJS.Config.Link.Shadow.Opacity;
+  deleteLink(link) {
+    var index = this.links.indexOf(link);
+    if (index == -1) return;
 
-    if (FlowJS.Config.Link.Shadow.Enabled) {
-      link.shadowElement = FlowJS.Tools.GenerateSVG('path');
-      this._linkContainer.appendChild(link.shadowElement);
+    this.linkMovementHandler.unfocus();
+    link.destroy();
 
-      link.shadowElement.style.stroke = FlowJS.Config.Link.Shadow.Color || stroke;
-      link.shadowElement.style.fill = 'none';
-      link.shadowElement.style.strokeOpacity = shadowOpacity;
-      link.shadowElement.style.strokeWidth = shadowThickness; 
-    }
+    this.links.splice(index, 1);
+  } 
 
-    link.element = FlowJS.Tools.GenerateSVG('path');
-    this._linkContainer.appendChild(link.element);
-
-    link.element.style.stroke = stroke;
-    link.element.style.fill = 'none';
-    link.element.style.strokeWidth = thickness;
-
-    link.overlay = FlowJS.Tools.GenerateSVG('path');
-    this._linkContainer.appendChild(link.overlay);
-
-    link.overlay.style.stroke = 'rgba(0,0,0,0)';
-    link.overlay.style.fill = 'none';
-    link.overlay.style.strokeWidth = Math.max(thickness + 2, shadowThickness);
-
-    link.overlay.link = link;
-
-    link.overlay.addEventListener('mouseover', (e) => {
-      var link = e.target.link;
-      var designer = link.designer;
-
-      if (designer.activeMovementHandler != undefined) return;
-
-      link.element.style.stroke = 'orange';
-
-
-      if (FlowJS.Config.Link.Shadow.Enabled) {
-        FlowJS.Tools.BringToFront(designer._linkContainer, link.shadowElement);
-      }
-      FlowJS.Tools.BringToFront(designer._linkContainer, link.element);
-      FlowJS.Tools.BringToFront(designer._linkContainer, link.overlay);
-
-      link.sourceConnector.focus();
-      link.targetConnector.focus();
-    });
-
-    link.overlay.addEventListener('mouseout', (e) => {
-      var link = e.target.link;
-      link.element.style.stroke = link.stroke;
-
-      link.sourceConnector.unfocus();
-      link.targetConnector.unfocus();
-    });
-
-    this.refreshLinkData(link);
-  }
-
-  registerConnection(connection) {
-    this.connections[connection.getId()] = connection;
-  }
 }

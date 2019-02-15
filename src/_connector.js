@@ -116,7 +116,7 @@ class Connector {
   }
 
   focus() {
-    this.element.style.stroke = this.node.selectedBorderColor;
+    this.element.style.stroke = this.designer.theme.Focus;
   }
 
   unfocus() {
