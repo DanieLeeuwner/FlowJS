@@ -43,9 +43,31 @@
       container: container,
       scale: 0.8,
       theme: FlowJS.Theme.Dark,
-      import: JSON.parse(localStorage.getItem('exp'))
-    });  
+      import: JSON.parse(localStorage.getItem('exp')),
+      callbacks: {
+        linkCreated: (e) => { console.log('Link created'); console.log(e); },
+        linkDeleted: (e) => { console.log('Link deleted'); console.log(e); },
+        nodeSelected: (e) => { console.log('Node selected'); console.log(e); },
+        nodeUnselected: (e) => { console.log('Node unselected'); console.log(e); },
+        nodeOpened: (e) => { console.log('Node opened'); console.log(e); },
+        nodeDeleted: (e) => { console.log('Node deleted'); console.log(e); },
+        nodeMoved: (e) => { console.log('Node moved'); console.log(e); },
+      },
+      validation: {
+        linkCreate: validationCallback,
+        linkDelete: validationCallback,
+        nodeDelete: validationCallback,
+      }
+    });
 
+    var lastCallback = undefined;
+
+    function validationCallback(e, callback) {
+      console.log('validation request');
+      console.log(e);
+
+      lastCallback = callback;
+    } 
 
     function renderTestNode(inputCount, outputCount) {
       var inputs = [];
@@ -67,7 +89,7 @@
         x: 60,
         y: 60,
         title: `Test ${inputCount} => ${outputCount}`,
-        subtitle: 'hi, this is world. hi, this is world.',
+        subtitle: 'hi, this is world.',
         inputs: inputs,
         outputs: outputs
       });

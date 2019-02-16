@@ -45,5 +45,9 @@ class SelectionMovementHandler extends MovementHandler {
     this.element = undefined;
 
     this.designer.activeMovementHandler = this.designer.nodeMovementHandler;
+
+    if (this.designer.nodeMovementHandler.nodes.length > 0 && this.designer.callbacks.nodeSelected) {
+      this.designer.callbacks.nodeSelected(this.designer.nodeMovementHandler.nodes);
+    }
   }
 }

@@ -451,6 +451,10 @@ class Designer {
 
     link.render();
     link.refresh();
+
+    if (this.callbacks.linkCreated) {
+      this.callbacks.linkCreated(link);
+    }
   }
 
   deleteLink(link) {
@@ -461,6 +465,10 @@ class Designer {
     link.destroy();
 
     this.links.splice(index, 1);
+
+    if (this.callbacks.linkDeleted) {
+      this.callbacks.linkDeleted(link);
+    }
   } 
 
 }

@@ -215,6 +215,13 @@ class Node {
 
       designer.nodeMovementHandler.activeNode = node;
       designer.nodeMovementHandler.keepSelected = node.selected;
+
+      var currentNodes = designer.nodeMovementHandler.nodes;
+      if (e.ctrlKey == false && (currentNodes.length > 1 || (currentNodes.length == 1 && currentNodes[0] != node))) {
+        if (designer.callbacks.nodeUnselected) {
+          designer.callbacks.nodeUnselected(designer.nodeMovementHandler.nodes);
+        }        
+      }
       
       if (node.selected == false) {
         var nodes = designer.nodeMovementHandler.nodes;

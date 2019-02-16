@@ -26,6 +26,7 @@ class NodeMovementHandler extends MovementHandler {
 
   setSelection(nodes) {
     this.nodes = nodes || [];
+
     for (var i = 0; i < this.designer.nodes.length; i++) {
       var node = this.designer.nodes[i];
       node.selected = (this.nodes.indexOf(node) != -1);
@@ -73,36 +74,45 @@ class NodeMovementHandler extends MovementHandler {
 
     if (position.dx == 0 && position.dy == 0 && this.keepSelected == false) {
       // select node
+
       this.setSelection([ this.activeNode ]);
-      return;
-    } 
+      
+    } else {
+      for (var i = 0; i < this.nodes.length; i++) {
+        var node = this.nodes[i];
 
-    for (var i = 0; i < this.nodes.length; i++) {
-      var node = this.nodes[i];
+        if (FlowJS.Config.Grid.Snap) {
+          node.x = Math.round(node.x / FlowJS.Config.Grid.Size) * FlowJS.Config.Grid.Size;
+          node.y = Math.round(node.y / FlowJS.Config.Grid.Size) * FlowJS.Config.Grid.Size;
+        }
 
-      if (FlowJS.Config.Grid.Snap) {
-        node.x = Math.round(node.x / FlowJS.Config.Grid.Size) * FlowJS.Config.Grid.Size;
-        node.y = Math.round(node.y / FlowJS.Config.Grid.Size) * FlowJS.Config.Grid.Size;
+        node.refreshPosition();
+
+        if (this.keepSelected == false) {
+          node.selected = false;
+          node.refreshBackground();
+        }
       }
 
-      node.refreshPosition();
+      this.designer.refreshNodeLinks(this.nodes);
 
       if (this.keepSelected == false) {
-        node.selected = false;
-        node.refreshBackground();
+        this.nodes = [];
       }
-    }
-
-    this.designer.refreshNodeLinks(this.nodes);  
-
-    if (this.keepSelected == false) {
-      this.nodes = [];
     }
 
     this.activeNode = undefined;
+
+    if (this.nodes.length > 0 && this.designer.callbacks.nodeSelected) {
+      this.designer.callbacks.nodeSelected(this.nodes);
+    }
   }
 
   reset() {
+    if (this.designer.nodeMovementHandler.nodes.length > 0 && this.designer.callbacks.nodeUnselected) {
+      this.designer.callbacks.nodeUnselected(this.designer.nodeMovementHandler.nodes);
+    }
+    
     this.designer.nodeMovementHandler.setSelection();
   }
 }
