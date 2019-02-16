@@ -15,8 +15,6 @@ class LinkMovementHandler extends MovementHandler {
       this.activeLink.targetConnector.selected = true;
 
       this.activeLink.focus();
-
-      this.designer.linkInputHandler.start();
     }
   }
 
@@ -28,14 +26,10 @@ class LinkMovementHandler extends MovementHandler {
       this.activeLink.unfocus();
     }
     this.activeLink = undefined;
-
-    this.designer.linkInputHandler.stop();
   }
 
   start(position) {
     super.start(position);
-
-    this.designer.nodeMovementHandler.setSelection();
   }
 
   update(position) {
@@ -50,5 +44,9 @@ class LinkMovementHandler extends MovementHandler {
       this.activeLink = this.currentLink;
       this.focus();
     }
+  }
+
+  reset() {
+    this.designer.linkMovementHandler.unfocus();
   }
 }

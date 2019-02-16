@@ -26,6 +26,7 @@ FlowJS.Movement = {
     var designer = position.designer;
 
     if (designer.activeMovementHandler == undefined) return;
+    if (designer.activeMovementHandler.active == false) return;
     designer.activeMovementHandler.update(position);
   },
 
@@ -35,6 +36,7 @@ FlowJS.Movement = {
     var designer = position.designer;
 
     if (designer.activeMovementHandler == undefined) return;
+    if (designer.activeMovementHandler.active == false) return;
     designer.activeMovementHandler.stop(position);
   },
 }
@@ -45,20 +47,35 @@ class MovementHandler {
 
     this.initialX = 0;
     this.initialY = 0;
+
+    this.active = false;
   }
 
   start(position) {
+    if (this.designer.activeMovementHandler != undefined) {
+      if (this.designer.activeMovementHandler != this) {
+        if (this.designer.activeMovementHandler.active) {
+          this.designer.activeMovementHandler.stop(position);
+        }
+        this.designer.activeMovementHandler.reset();
+      }
+    }
+
     this.designer.activeMovementHandler = this;
 
     this.initialX = position.x;
     this.initialY = position.y;
+
+    this.active = true;
   }
 
   update(position) {
-
   }
 
   stop(position) {
-    this.designer.activeMovementHandler = undefined;
+    this.active = false;
+  }
+
+  reset() {
   }
 }

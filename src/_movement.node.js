@@ -31,12 +31,6 @@ class NodeMovementHandler extends MovementHandler {
       node.selected = (this.nodes.indexOf(node) != -1);
     }
     this.designer.refreshNodeSelectionStates();
-
-    if (this.nodes.length > 0) {
-      this.designer.nodeInputHandler.start();
-    } else {
-      this.designer.nodeInputHandler.stop();
-    }
   }
 
   start(position) {
@@ -49,9 +43,6 @@ class NodeMovementHandler extends MovementHandler {
 
       FlowJS.Tools.BringToFront(this.designer._nodeContainer, node.element);
     }
-    
-    this.designer.nodeInputHandler.start();
-    this.designer.linkMovementHandler.unfocus();
   }
 
   update(position) {
@@ -74,7 +65,7 @@ class NodeMovementHandler extends MovementHandler {
       node.refreshPosition();
     }
 
-    designer.refreshNodeLinks(this.nodes);  
+    this.designer.refreshNodeLinks(this.nodes);  
   }
 
   stop(position) {
@@ -102,12 +93,16 @@ class NodeMovementHandler extends MovementHandler {
       }
     }
 
-    designer.refreshNodeLinks(this.nodes);  
+    this.designer.refreshNodeLinks(this.nodes);  
 
     if (this.keepSelected == false) {
       this.nodes = [];
     }
 
     this.activeNode = undefined;
+  }
+
+  reset() {
+    this.designer.nodeMovementHandler.setSelection();
   }
 }

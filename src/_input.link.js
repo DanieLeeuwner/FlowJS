@@ -1,16 +1,14 @@
 "use strict";
 
-class LinkInputHandler extends InputHanlder {
+class LinkInputHandler extends InputHandler {
   constructor(designer) {
     super(designer);
   }
 
-  start() {
-    super.start();
-  }
-
   keyPress(e) {
     super.keyPress(e);
+
+    if (this.designer.linkMovementHandler.activeLink == undefined) return;
 
     switch (e.keyCode) {
       case 46:
@@ -22,9 +20,5 @@ class LinkInputHandler extends InputHanlder {
         this.designer.linkMovementHandler.unfocus();
         break;
     }
-  }
-
-  stop() {
-    super.stop();
   }
 }

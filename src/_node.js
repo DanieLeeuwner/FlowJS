@@ -8,7 +8,7 @@ class Node {
     this.y = data.y || 0;
 
 
-    this.width = data.width || 175;
+    this.width = data.width || 225;
     this.height = data.height || 60;
 
     this.id = data.id || FlowJS.Tools.GenerateId(8);
@@ -29,8 +29,20 @@ class Node {
     this.foregroundColor = data.foregroundColor || '#000';
     this.borderColor = data.borderColor || '#909090';
 
-    this.inputs = data.inputs || [];
-    this.outputs = data.outputs || [];
+    this.inputs = [];
+    this.outputs = [];
+
+    if (data.inputs) {
+      for (var i = 0; i < data.inputs.length; i++) {
+        this.inputs.push(new Connector(data.inputs[i]));
+      }
+    }
+
+    if (data.outputs) {
+      for (var i = 0; i < data.outputs.length; i++) {
+        this.outputs.push(new Connector(data.outputs[i]));
+      }
+    }
 
     this.element = undefined;
 
@@ -69,6 +81,8 @@ class Node {
 
   export() {
     var node = {
+      id: this.id,
+
       x: this.x,
       y: this.y,
 
@@ -82,10 +96,6 @@ class Node {
       backgroundColor: this.backgroundColor,
       foregroundColor: this.foregroundColor,
       borderColor: this.borderColor,
-
-      selectedBackgroundColor: this.selectedBackgroundColor,
-      selectedForegroundColor: this.selectedForegroundColor,
-      selectedBorderColor: this.selectedBorderColor,
 
       inputs: FlowJS.Tools.ExportCollection(this.inputs),
       outputs: FlowJS.Tools.ExportCollection(this.outputs),
@@ -145,10 +155,12 @@ class Node {
     });
     this.element.appendChild(clippingArea);
 
+    var horizontalMargin = 30;
+
     var clippingRectangle = FlowJS.Tools.GenerateSVG('rect', {
-      'x': 10,
+      'x': horizontalMargin,
       'y': 0,
-      'width': this.width - 20,
+      'width': this.width - horizontalMargin * 2,
       'height': this.height  
     });
     clippingArea.appendChild(clippingRectangle);
@@ -161,7 +173,7 @@ class Node {
 
     // title
     var titleText = FlowJS.Tools.GenerateSVG('text', {
-      'x': 10,
+      'x': horizontalMargin,
       'y': 20,
       'font-size': FlowJS.Config.Font.Size,
       'font-weight': 'bold',
@@ -173,7 +185,7 @@ class Node {
 
     // subtitle
     var subtitleText = FlowJS.Tools.GenerateSVG('text', {
-      'x': 10,
+      'x': horizontalMargin,
       'y': 20 + FlowJS.Config.Font.Size,
       'font-size': FlowJS.Config.Font.Size,
     });
@@ -234,8 +246,10 @@ class Node {
       connection.offsetX = 0;
       connection.offsetY = 10 + (i * 15);
 
-      connectionElement.setAttribute('x', -5);
-      connectionElement.setAttribute('y', 5 + (i * 15));
+      var x = -5;
+      var y = 5 + (i * 15);
+
+      connectionElement.setAttribute('transform', `translate(${x}, ${y})`);
     }
   }
 
@@ -253,8 +267,10 @@ class Node {
       connection.offsetX = this.width;
       connection.offsetY = 10 + (i * 15);
 
-      connectionElement.setAttribute('x', this.width - 5);
-      connectionElement.setAttribute('y', 5 + (i * 15));
+      var x = this.width - 5;
+      var y = 5 + (i * 15);
+
+      connectionElement.setAttribute('transform', `translate(${x}, ${y})`);
     }
   }
 
@@ -262,6 +278,20 @@ class Node {
     var centerX = this.x + (this.width / 2);
     var cetnerY = this.y + (this.height / 2)
     return (centerX >= xi && cetnerY >= yi && centerX <= xf && cetnerY <= yf);
+  }
+
+  getConnector(id) {
+    for (var i = 0; i < this.inputs.length; i++) {
+      if (this.inputs[i].id == id) {
+        return this.inputs[i];
+      }
+    }
+
+    for (var i = 0; i < this.outputs.length; i++) {
+      if (this.outputs[i].id == id) {
+        return this.outputs[i];
+      }
+    }
   }
 
   destroy() {

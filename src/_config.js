@@ -28,7 +28,7 @@ FlowJS.Config = {
     Style: FlowJS.GridStyle.Line,
     Thickness: 2,
     Enabled: true,
-    Size: 25,
+    Size: 20,
     Snap: true,
     Cursor: 'crosshair',
   },

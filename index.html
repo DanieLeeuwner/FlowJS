@@ -39,9 +39,10 @@
 
   <script type="text/javascript">
     
-    var designer = new Designer({
+    var flo = new Designer({
       container: container,
       theme: FlowJS.Theme.Dark,
+      import: JSON.parse(localStorage.getItem('exp'))
     });  
 
 
@@ -50,18 +51,22 @@
       var outputs = [];
 
       for (var i = 0; i < inputCount; i++) {
-        inputs.push(new Connector({}));
+        inputs.push(new Connector({
+          name: 'I:' + (i + 1) 
+        }));
       }
 
       for (var i = 0; i < outputCount; i++) {
-        outputs.push(new Connector({}));
+        outputs.push(new Connector({
+          name: 'O:' + (i + 1)
+        }));
       }
 
-      designer.createNode({
-        x: 50,
-        y: 50,
-        title: 'hello world',
-        subtitle: 'hi, this is world',
+      flo.createNode({
+        x: 60,
+        y: 60,
+        title: `Test ${inputCount} => ${outputCount}`,
+        subtitle: 'hi, this is world. hi, this is world.',
         inputs: inputs,
         outputs: outputs
       });

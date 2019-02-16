@@ -15,7 +15,6 @@ class Link {
     this.x = data.x || 0;
     this.y = data.y || 0;
 
-    this.hint = data.hint;
     this.stroke = data.stroke;
 
     this.selected = false;
@@ -24,15 +23,12 @@ class Link {
     this.targetConnector = data.targetConnector;
 
     this.designer = data.designer;
-
-    this.enableEvents = data.enableEvents != undefined ? data.enableEvents : true;
   }
 
   export() {
     var link = {
       source: this.source,
       target: this.target,
-      hint: this.hint,
       stroke: this.stroke,
     }
 
@@ -53,6 +49,7 @@ class Link {
 
   unfocus() {
     if (this.selected) return;
+    if (this.targetConnector == undefined) return;
 
     this.element.style.stroke = this.stroke;
     this.sourceConnector.unfocus();
@@ -90,19 +87,13 @@ class Link {
     }
 
     this.element.setAttribute('d', data);
-
-    if (this.enableEvents) {
-      this.overlay.setAttribute('d', data);
-    }
+    this.overlay.setAttribute('d', data);
   }
 
   render() {
     this._renderShadow();
     this._renderElement();
-
-    if (this.enableEvents) {
-      this._renderOverlay();
-    }
+    this._renderOverlay();
   }
 
   _renderShadow() {
@@ -148,7 +139,11 @@ class Link {
       var link = e.target.link;
       var designer = link.designer;
 
-      if (designer.activeMovementHandler != undefined) return;
+      if (designer.activeMovementHandler != undefined) {
+        if (designer.activeMovementHandler.active) {
+          return;
+        }
+      }
 
       link.focus();
 
@@ -187,8 +182,6 @@ class Link {
 
     this.designer._linkContainer.removeChild(this.element);
 
-    if (this.enableEvents) {
-      this.designer._linkContainer.removeChild(this.overlay);    
-    }
+    this.designer._linkContainer.removeChild(this.overlay);    
   }
 }

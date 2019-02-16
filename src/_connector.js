@@ -10,10 +10,13 @@ class Connector {
     this.offsetY = 0;
 
     this.hint = data.hint;
+    this.name = data.name;
 
     this.type = FlowJS.ConnectorType.None;
 
     this.element = undefined;
+    this.connector = undefined;
+    this.nameText = undefined;
 
     this.selected = false;
 
@@ -25,6 +28,7 @@ class Connector {
     var connector = {
       id: this.id,
       hint: this.hint,
+      name: this.name,
       type: this.type
     }
 
@@ -63,20 +67,24 @@ class Connector {
       connectorFill = this.node.borderColor;
     }
 
-    this.element = FlowJS.Tools.GenerateSVG('rect', {
+    this.element = FlowJS.Tools.GenerateSVG('g');
+
+    this.connector = FlowJS.Tools.GenerateSVG('rect', {
       'width': 10,
       'height': 10,
       'rx': rx,
       'ry': ry,
       'cursor': FlowJS.Config.Connector.Cursor,
     });
-    this.element.connector = this;
+    this.element.appendChild(this.connector);
 
-    this.element.style.fill = connectorFill;
-    this.element.style.stroke = this.node.borderColor;
-    this.element.style.strokeWidth = FlowJS.Config.Node.Thickness + 'px';
+    this.connector.connector = this;
 
-    this.element.addEventListener('mouseover', function(e) {
+    this.connector.style.fill = connectorFill;
+    this.connector.style.stroke = this.node.borderColor;
+    this.connector.style.strokeWidth = FlowJS.Config.Node.Thickness + 'px';
+
+    this.connector.addEventListener('mouseover', function(e) {
       var connector = e.target.connector;
       connector.focus();
 
@@ -86,12 +94,12 @@ class Connector {
       designer.connectorMovementHandler.finalConnector = connector;      
     });
 
-    this.element.addEventListener('mouseout', function(e) {
+    this.connector.addEventListener('mouseout', function(e) {
       var connector = e.target.connector;
       connector.unfocus();
     });
 
-    this.element.addEventListener('mousedown', function(e) {
+    this.connector.addEventListener('mousedown', function(e) {
       var connector = e.target.connector;
       connector.selected = true;
 
@@ -102,9 +110,11 @@ class Connector {
       designer.connectorMovementHandler.start(position);
     })
 
-    this.element.addEventListener('mousedown', function(e) {
+    this.connector.addEventListener('mousedown', function(e) {
       var connector = e.target.connector;
+      var designer = connector.designer;
       var initialConnector = designer.connectorMovementHandler.initialConnector;
+
       if (connector.selected || connector.type == initialConnector.type || connector.node.id == initialConnector.node.id) {
         designer.connectorMovementHandler.finalConnector = undefined;
       } else {
@@ -112,16 +122,44 @@ class Connector {
       }
     });
 
+    if (this.name != undefined && this.name != '') {
+      this.nameText = FlowJS.Tools.GenerateSVG('text', {
+        'font-size': 10,
+        'opacity': 0.2
+      });
+      this.element.appendChild(this.nameText);
+      this.nameText.innerHTML = this.name;
+      
+      var x = 0;
+      var y = 8;
+
+      switch (this.type) {
+        case FlowJS.ConnectorType.Input:
+          x = 12;
+          y = 8;
+          break;
+        case FlowJS.ConnectorType.Output:
+          x = (FlowJS.Tools.MeasureText(this.name, 'normal 10px ' + FlowJS.Config.Font.Family) * -1) - 2;
+          y = 8;
+          break;
+      }
+
+      this.nameText.setAttribute('x', x);
+      this.nameText.setAttribute('y', y);
+    }
+
     return this.element;
   }
 
   focus() {
-    this.element.style.stroke = this.designer.theme.Focus;
+    this.connector.style.stroke = this.designer.theme.Focus;
+    this.nameText.setAttribute('opacity', 0.8);
   }
 
   unfocus() {
     if (this.selected) return;
 
-    this.element.style.stroke = this.node.borderColor;
+    this.connector.style.stroke = this.node.borderColor;
+    this.nameText.setAttribute('opacity', 0.2);    
   }
 }

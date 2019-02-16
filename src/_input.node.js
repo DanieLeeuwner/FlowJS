@@ -1,12 +1,8 @@
 "use strict";
 
-class NodeInputHandler extends InputHanlder {
+class NodeInputHandler extends InputHandler {
   constructor(designer) {
     super(designer);
-  }
-
-  start() {
-    super.start();
   }
 
   keyPress(e) {
@@ -21,9 +17,5 @@ class NodeInputHandler extends InputHanlder {
         this.designer.nodeMovementHandler.setSelection();
         break;
     }
-  }
-
-  stop() {
-    super.stop();
   }
 }

@@ -6,6 +6,8 @@ FlowJS.Input = {
 
   ActiveDesigner: undefined,
 
+  InputHandlers: {},
+
   UnfocusDesigner: () => {
     if (FlowJS.Input.ActiveDesigner) {
       FlowJS.Input.ActiveDesigner.container.setAttribute('tabindex', null);
@@ -20,55 +22,23 @@ FlowJS.Input = {
   },
 
   KeyPress: (e) => {
-    if (FlowJS.Input.ActiveDesigner == undefined) return;
-
     var designer = FlowJS.Input.ActiveDesigner;
 
-    if (designer.activeInputHandler) {
-      designer.activeInputHandler.keyPress(e);
+    if (designer == undefined) return;
+
+    for (var i = 0; i < designer.inputHandlers.length; i++) {
+      var handler = designer.inputHandlers[i];
+      handler.keyPress(e);
     }
-
   },
-
 }
 
-class InputHanlder {
+class InputHandler {
   constructor(designer) {
     this.designer = designer;
-  }
-
-  start() {
-    this.designer.activeInputHandler = this;
+    this.designer.inputHandlers.push(this);
   }
 
   keyPress(e) {
-  }
-
-  stop() {
-    if (this.designer.activeInputHandler == this) {
-      this.designer.activeInputHandler = undefined;
-    }
-
-    this.designer.baseInputHandler.start();
-  }
-}
-
-class BaseInputHandler extends InputHanlder {
-  constructor(designer) {
-    super(designer);
-  }
-
-  start() {
-    super.start();
-  }
-
-  keyPress(e) {
-    super.keyPress(e);
-
-    switch (e.keyCode) {
-    }
-  }
-
-  stop() {
   }
 }

@@ -14,8 +14,8 @@ FlowJS.Tools = {
   ExportCollection: (data) => {
     var output = [];
 
-    for (var id = 0; id < data.length; id++) {
-      output.push(data[i].export);
+    for (var i = 0; i < data.length; i++) {
+      output.push(data[i].export());
     }
 
     return output;
@@ -29,29 +29,34 @@ FlowJS.Tools = {
     return element;
   },
 
-  _noSelect: undefined,
+  _containerStyle: undefined,
 
-  NoSelect: () => {
-    if (FlowJS.Tools._noSelect) {
-      return FlowJS.Tools._noSelect;
+  ContainerStyle: () => {
+    if (FlowJS.Tools._containerStyle) {
+      return FlowJS.Tools._containerStyle;
     }
 
     style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = 
-     `.FlowJS_NoSelect {
+     `.FlowJS_Container {
         -webkit-touch-callout: none;
           -webkit-user-select: none;
            -khtml-user-select: none;
              -moz-user-select: none;
               -ms-user-select: none;
                   user-select: none;
-      }`;
+      }
+
+      .FlowJS_Container:focus {
+        outline: 0;
+      } 
+      `;
     document.getElementsByTagName('head')[0].appendChild(style);
 
-    FlowJS.Tools._noSelect = 'FlowJS_NoSelect';
+    FlowJS.Tools._containerStyle = 'FlowJS_Container';
 
-    return FlowJS.Tools._noSelect;
+    return FlowJS.Tools._containerStyle;
   },
 
   GetDesigner: (e) => {
@@ -93,5 +98,13 @@ FlowJS.Tools = {
   BringToFront: (container, element) => {
     container.removeChild(element);
     container.appendChild(element);
+  },
+
+  MeasureText: (text, font) => {
+    var canvas = FlowJS.Tools.MeasureText.canvas || (FlowJS.Tools.MeasureText.canvas = document.createElement("canvas"));
+    var context = canvas.getContext("2d");
+    context.font = font;
+    var metrics = context.measureText(text);
+    return metrics.width;
   }
 }

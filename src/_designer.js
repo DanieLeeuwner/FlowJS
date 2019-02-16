@@ -9,7 +9,7 @@ class Designer {
     
     this.theme = data.theme || FlowJS.Theme.Light;
 
-    this.scale = data.zoom || 0.8;
+    this.scale = data.zoom || 1;
 
     this.width = data.width || 2500;
     this.height = data.height || 2500;
@@ -24,10 +24,9 @@ class Designer {
     this.connectorMovementHandler = new ConnectorMovementHandler(this);
     this.linkMovementHandler = new LinkMovementHandler(this);
 
-    this.activeInputHandler = undefined;
-    this.baseInputHandler = new BaseInputHandler(this);
-    this.nodeInputHandler = new NodeInputHandler(this);
+    this.inputHandlers = [];
     this.linkInputHandler = new LinkInputHandler(this);
+    this.nodeInputHandler = new NodeInputHandler(this);
 
     this.callbacks = {
       linkCreated: undefined,
@@ -87,15 +86,60 @@ class Designer {
   importData(data) {
     if (data == undefined) return;
 
-    this.nodes = data.nodes || [];
-    this.links = data.links || [];
+    console.log('importing');
+
+    this.nodes = [];
+    this.links = [];
+
+    for (var i = 0; i < data.nodes.length; i++) {
+      var node = new Node(data.nodes[i]);
+      node.designer = this;
+
+      this.nodes.push(node);
+    }
+
+    for (var i = 0; i < data.links.length; i++) {
+      var linkData = data.links[i];
+
+      var link = new Link(linkData.source, linkData.target, linkData);
+      link.designer = this;
+
+      var sourceNode = link.source.substring(0, 8);
+      var sourceConnector = link.source.substring(9);
+
+      var targetNode = link.target.substring(0, 8);
+      var targetConnector = link.target.substring(9);
+
+      for (var n_id = 0; n_id < this.nodes.length; n_id++) {
+        var node = this.nodes[n_id];
+
+        if (node.id == sourceNode) {
+          var connector = node.getConnector(sourceConnector);
+          if (connector != undefined) {
+            link.sourceConnector = connector;
+          }          
+          continue;
+        }
+        if (node.id == targetNode) {
+          var connector = node.getConnector(targetConnector);
+          if (connector != undefined) {
+            link.targetConnector = connector;
+          }
+          continue;
+        }
+      }
+
+      if (link.sourceConnector && link.targetConnector) {
+        this.links.push(link);
+      }
+    }
   }
 
   initializeContainer() {
     this.container.innerHTML = '';
     this.container.style.overflow = 'hidden';
     this.container.style.position = 'relative';
-    this.container.className += FlowJS.Tools.NoSelect();
+    this.container.className += FlowJS.Tools.ContainerStyle();
 
     this.designContainer = document.createElement('div');
     this.container.appendChild(this.designContainer);
@@ -289,7 +333,8 @@ class Designer {
 
     for (var i = 0; i < this.links.length; i++) {
       var link = this.links[i];
-      this.displayLink(link);
+      link.render();
+      link.refresh();
     }
   }
 
