@@ -9,10 +9,10 @@ class Designer {
     
     this.theme = data.theme || FlowJS.Theme.Light;
 
-    this.scale = data.zoom || 1;
+    this.scale = data.scale || 1;
 
-    this.width = data.width || 2500;
-    this.height = data.height || 2500;
+    this.width = data.width || 5000;
+    this.height = data.height || 5000;
 
     this.nodes = [];
     this.links = [];

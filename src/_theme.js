@@ -28,13 +28,6 @@ FlowJS.Palette = {
   ],
 }
 
-/*
-
-Notes: 
-- Make Theme.Light.Grid darker for GridStyle.Dot
-
-*/
-
 FlowJS.Theme = {
   Light: {
     Grid: '#CCC',

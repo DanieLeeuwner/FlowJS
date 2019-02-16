@@ -60,8 +60,8 @@ FlowJS.Config = {
   },
 
   Scale: {
-    Minimum: 0.2,
-    Maximum: 5,
+    Minimum: 0.25,
+    Maximum: 2.5,
   },
 
   Controls: {
