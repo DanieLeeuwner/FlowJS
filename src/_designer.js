@@ -376,8 +376,8 @@ class Designer {
 
   createNode(data) {
     // Calculate X and Y position
-    data.x = data.x + (this.container.scrollLeft / this.scale);
-    data.y = data.y + (this.container.scrollTop / this.scale);
+    data.x = data.x + (this.designContainer.scrollLeft / this.scale);
+    data.y = data.y + (this.designContainer.scrollTop / this.scale);
     data.designer = this;
 
     var node = new Node(data);

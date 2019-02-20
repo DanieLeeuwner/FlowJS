@@ -87,12 +87,7 @@ class NodeMovementHandler extends MovementHandler {
       for (var i = 0; i < this.nodes.length; i++) {
         var node = this.nodes[i];
 
-        if (FlowJS.Config.Grid.Snap) {
-          node.x = Math.round(node.x / FlowJS.Config.Grid.Size) * FlowJS.Config.Grid.Size;
-          node.y = Math.round(node.y / FlowJS.Config.Grid.Size) * FlowJS.Config.Grid.Size;
-        }
-
-        node.refreshPosition();
+        node.refreshPosition(true);
 
         if (this.keepSelected == false) {
           node.selected = false;

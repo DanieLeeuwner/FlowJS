@@ -5,7 +5,7 @@ controls.push({
   node: {
     title: 'alert',
     subtitle: 'display alert box',
-    type: 'alert',
+    type: 'code',
     inputs: [
       {
         name: 'IN',
@@ -13,10 +13,7 @@ controls.push({
       }
     ],
     data: {
-      code: `
-        alert(input.text);
-        next();
-      `
+      code: `alert(input.text);`
     }
   }
 });
@@ -26,7 +23,7 @@ controls.push({
   node: {
     title: 'prompt',
     subtitle: 'prompt input value',
-    type: 'prompt',    
+    type: 'code',    
     inputs: [
       {
         name: 'IN',
@@ -40,10 +37,31 @@ controls.push({
       }
     ],
     data: {
-      code: `
-        output.value = prompt(input.text);
-        next();
-      `
+      code: `output.value = prompt(input.text);\nthis.next();`
+    }
+  }
+});
+
+controls.push({
+  title: 'code',
+  node: {
+    title: 'code',
+    subtitle: 'configured code',
+    type: 'code',    
+    inputs: [
+      {
+        name: 'IN',
+        key: 'value'
+      }
+    ],
+    outputs: [
+      {
+        name: 'OUT',
+        key: 'value'
+      }
+    ],
+    data: {
+      code: `console.log(input.value);\nconsole.log(output.value);\nthis.next();`
     }
   }
 });

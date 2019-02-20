@@ -3,7 +3,7 @@ var tempElement;
 
 var demoDesigner = new Designer({
   container: container,
-  scale: 0.8,
+  scale: 1,
   theme: FlowJS.Theme.Dark,
   callbacks: {
     nodeUnselected: (e) => { nodeUnselected(e); },
@@ -24,7 +24,21 @@ function registerEvents() {
       return;
     }
 
-    popup.className = 'hidden';
+    switch (currentNode.type) {
+      case 'code':
+        currentNode.data.code = codeArea.value;
+        break;
+
+      case 'event':
+        try {
+          currentNode.data = JSON.parse(codeArea.value);
+        } catch(e) {
+          return;
+        }
+        break;
+    }
+
+    hideCode();
     demoDesigner.nodeMovementHandler.setSelection();
   });
 
@@ -35,16 +49,16 @@ function registerEvents() {
 
     container.removeChild(tempElement);
 
-    var x = e.layerX - 200 + demoDesigner.designContainer.scrollLeft;
-    var y = e.layerY + demoDesigner.designContainer.scrollTop;
+    var x = e.layerX - 200;
+    var y = e.layerY;
 
-    x -= tempElement.ol;
-    y -= tempElement.ot;
+    x -= tempElement.initialX;
+    y -= tempElement.initialY;
     
     x /= demoDesigner.scale;
     y /= demoDesigner.scale;
 
-    var node = control.node;
+    var node = JSON.parse(JSON.stringify(control.node));
 
     node.x = x;
     node.y = y;
@@ -60,8 +74,8 @@ function registerEvents() {
     e.stopPropagation();
     e.preventDefault();
 
-    tempElement.style.top = e.clientY - tempElement.ot + 'px';
-    tempElement.style.left = e.clientX - tempElement.ol + 'px';
+    tempElement.style.top = e.clientY - tempElement.initialY + 'px';
+    tempElement.style.left = e.clientX - tempElement.initialX + 'px';
   });
 }
 
@@ -82,11 +96,11 @@ function updateControls() {
       tempElement = createDisplayNode(element.control);
       tempElement.className = 'control move';
 
-      tempElement.ot = e.layerY;
-      tempElement.ol = e.layerX;
+      tempElement.initialY = e.layerY;
+      tempElement.initialX = e.layerX;
 
-      tempElement.style.top = e.clientY - tempElement.ot + 'px';
-      tempElement.style.left = e.clientX - tempElement.ol + 'px';
+      tempElement.style.top = e.clientY - tempElement.initialY + 'px';
+      tempElement.style.left = e.clientX - tempElement.initialX + 'px';
 
       container.appendChild(tempElement);
     });
@@ -103,32 +117,6 @@ function createDisplayNode(control) {
   return element;
 }
 
-function renderTestNode(inputCount, outputCount) {
-  var inputs = [];
-  var outputs = [];
-
-  for (var i = 0; i < inputCount; i++) {
-    inputs.push(new Connector({
-      name: 'I:' + (i + 1) 
-    }));
-  }
-
-  for (var i = 0; i < outputCount; i++) {
-    outputs.push(new Connector({
-      name: 'O:' + (i + 1)
-    }));
-  }
-
-  demoDesigner.createNode({
-    x: 60,
-    y: 60,
-    title: `Test ${inputCount} => ${outputCount}`,
-    subtitle: 'hi, this is world.',
-    inputs: inputs,
-    outputs: outputs
-  });
-}
-
 var currentNode = undefined;
 
 function nodeUnselected(nodes) {
@@ -138,9 +126,30 @@ function nodeUnselected(nodes) {
 function nodeSelected(node) {
   currentNode = node;
 
-  if (node.type == 'code') {
-    popup.className = 'shown';
+  switch (currentNode.type) {
+    case 'code':
+      showCode(currentNode.data.code);
+      break;
+
+    case 'event':
+      showCode(JSON.stringify(currentNode.data, null, 2));
+      break;
   }
+}
+
+function setCode(value) {
+  codeArea.value = value;
+}
+
+function showCode(value) {
+  if (value != undefined) {
+    setCode(value);
+  }
+  popup.className = 'shown';
+}
+
+function hideCode() {
+  popup.className = 'hidden';
 }
 
 function inputKeyDown(e) {
@@ -150,6 +159,101 @@ function inputKeyDown(e) {
     e.preventDefault();
     codeArea.insertAtCaret('  ');
   }
+}
+
+var eventListeners = {};
+
+var demoData;
+
+function run() {
+  eventListeners = {};
+
+  demoData = demoDesigner.export();
+
+  for (var i = 0; i < demoData.nodes.length; i++) {
+    var node = demoData.nodes[i];
+
+    switch (node.type) {
+      case 'event':
+        if (node.inputs.length > 0) {
+          node.execute = (node, data) => {
+            executeEvent(node.data.event, node.data.output);
+          }
+        } else {
+          registerEvent(node, node.data.event, (node, input) => {
+            var links = getLinks(node.id + '.' + node.outputs[0].id);
+            executeLinks(links, node.data.output);
+          });
+        }
+        break;
+      case 'code':
+        node.execute = (node, data) => {
+          var output = {};
+
+          var next = (key) => {
+            if (node.outputs == undefined || node.outputs.length == 0) return;
+
+            if (key == undefined) {
+              key = node.outputs[0].key;
+            }
+
+            for (var i = 0; i < node.outputs.length; i++) {
+              var output = node.outputs[i];
+              if (output.key == key) {
+                executeLinks(getLinks(node.id + '.' + output.id), output);
+              }
+            }
+          }
+          eval(node.data.code);
+        }
+        break;
+    }
+  }
+
+  executeEvent('startup');
+}
+
+function executeEvent(name, data) {
+  if (eventListeners[name] == undefined) return;
+  for (var i = 0; i < eventListeners[name].length; i++) {
+    var event = eventListeners[name][i];
+    event.callback(event.node, data);
+  }
+}
+
+function registerEvent(node, name, callback) {
+  if (eventListeners[name] == undefined) {
+    eventListeners[name] = [];
+  }
+  eventListeners[name].push({ node: node, callback: callback });
+}
+
+function getLinks(id) {
+  var links = [];
+  for (var i = 0; i < demoData.links.length; i++) {
+    var link = demoData.links[i];
+    if (link.source == id) {
+      links.push(link);
+    }
+  } 
+  return links;
+}
+
+function getNode(id) {
+  var nodeId = id.substring(0, 8);
+  for (var i = 0; i < demoData.nodes.length; i++) {
+    var node = demoData.nodes[i];
+    if (node.id == nodeId) {
+      return node;
+    }
+  } 
+}
+
+function executeLinks(links, data) {
+  links.forEach((link) => {
+    var node = getNode(link.target);
+    node.execute(node, data);
+  });
 }
 
 HTMLTextAreaElement.prototype.insertAtCaret = function (text) {

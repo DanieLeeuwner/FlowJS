@@ -9,7 +9,7 @@ class Node {
 
 
     this.width = data.width || 225;
-    this.height = data.height || 60;
+    this.height = data.height || 45;
 
     this.id = data.id || FlowJS.Tools.GenerateId(8);
 
@@ -60,7 +60,7 @@ class Node {
     this.refreshBackground();
 
     // update size
-    this.refreshPosition();
+    this.refreshPosition(true);
     this.refreshSize();
   }
 
@@ -84,7 +84,12 @@ class Node {
     }
   }
 
-  refreshPosition() {
+  refreshPosition(performSnapping) {
+    if (performSnapping && FlowJS.Config.Grid.Snap) {
+      this.x = Math.round(this.x / FlowJS.Config.Grid.Size) * FlowJS.Config.Grid.Size;
+      this.y = Math.round(this.y / FlowJS.Config.Grid.Size) * FlowJS.Config.Grid.Size;
+    }
+
     this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
   }
 
