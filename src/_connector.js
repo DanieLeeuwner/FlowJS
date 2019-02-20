@@ -9,7 +9,6 @@ class Connector {
     this.offsetX = 0;
     this.offsetY = 0;
 
-    this.hint = data.hint;
     this.name = data.name;
 
     this.type = FlowJS.ConnectorType.None;

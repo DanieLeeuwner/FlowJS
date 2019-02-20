@@ -17,7 +17,6 @@ class Node {
 
     this.title = data.title;
     this.subtitle = data.subtitle;
-    this.hint = data.hint;
 
     this.selected = false;
     this.initialX = 0;
@@ -45,14 +44,17 @@ class Node {
     }
 
     this.element = undefined;
+    this.image
 
     this.designer = data.designer;
   }
 
   refresh() {
     // update text
-    // update inputs
-    // update outputs
+    this.refreshText();
+
+    // update image
+    this.refreshImage();
 
     // update selection
     this.refreshBackground();
@@ -62,11 +64,22 @@ class Node {
     this.refreshSize();
   }
 
+  refreshText() {
+    this.titleText.innerHTML = this.title;
+    this.subtitleText.innerHTML = this.subtitle;
+  }
+
+  refreshImage() {
+
+  }
+
   refreshBackground() {
+    this.background.style.strokeWidth = FlowJS.Config.Node.Thickness + 'px';
+    this.background.style.fill = this.backgroundColor;
+
     if (this.selected) {
       this.background.style.stroke = this.designer.theme.Focus;
     } else {
-      this.background.style.fill = this.backgroundColor;
       this.background.style.stroke = this.borderColor;
     }
   }
@@ -125,6 +138,8 @@ class Node {
 
     this._renderOutputs();
 
+    this.refresh();
+
     return this.element;
   }
 
@@ -140,10 +155,6 @@ class Node {
     this.element.appendChild(backgroundRectangle);
 
     this.background = backgroundRectangle;
-
-    backgroundRectangle.style.strokeWidth = FlowJS.Config.Node.Thickness + 'px';
-    backgroundRectangle.style.fill = this.backgroundColor;
-    backgroundRectangle.style.stroke = this.borderColor;
   }
 
   _renderTextArea() {
@@ -172,26 +183,23 @@ class Node {
     this.element.appendChild(textArea);
 
     // title
-    var titleText = FlowJS.Tools.GenerateSVG('text', {
+    this.titleText = FlowJS.Tools.GenerateSVG('text', {
       'x': horizontalMargin,
       'y': 20,
       'font-size': FlowJS.Config.Font.Size,
       'font-weight': 'bold',
       'color': 'blue'
     });
-    textArea.appendChild(titleText);
-
-    titleText.innerHTML = this.title;
+    textArea.appendChild(this.titleText);
 
     // subtitle
-    var subtitleText = FlowJS.Tools.GenerateSVG('text', {
+    this.var subtitleText = FlowJS.Tools.GenerateSVG('text', {
       'x': horizontalMargin,
       'y': 20 + FlowJS.Config.Font.Size,
       'font-size': FlowJS.Config.Font.Size,
     });
-    textArea.appendChild(subtitleText);
+    textArea.appendChild(this.subtitleText);
 
-    subtitleText.innerHTML = this.subtitle;
   }
 
   _renderMouseEventListener() {
@@ -279,6 +287,10 @@ class Node {
 
       connectionElement.setAttribute('transform', `translate(${x}, ${y})`);
     }
+  }
+
+  setForeignContent(element) {
+
   }
 
   inRectangle(xi, yi, xf, yf) {
