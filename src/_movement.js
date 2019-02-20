@@ -31,9 +31,13 @@ FlowJS.Movement = {
   },
 
   MouseUp: (e) => {
-    var position = FlowJS.Tools.GetPosition(e);
-    if (position == null) return;
-    var designer = position.designer;
+    var position = FlowJS.Tools.GetPosition(e) || {};
+    //if (position == null) return;
+
+    var designer = FlowJS.Input.ActiveDesigner;
+    if (designer == undefined) return;
+    
+    position.designer = designer;
 
     if (designer.activeMovementHandler == undefined) return;
     if (designer.activeMovementHandler.active == false) return;

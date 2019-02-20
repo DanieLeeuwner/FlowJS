@@ -10,6 +10,7 @@ class Connector {
     this.offsetY = 0;
 
     this.name = data.name;
+    this.key = data.key;
 
     this.type = FlowJS.ConnectorType.None;
 
@@ -96,6 +97,10 @@ class Connector {
     this.connector.addEventListener('mouseout', function(e) {
       var connector = e.target.connector;
       connector.unfocus();
+
+      var designer = connector.designer;
+
+      designer.connectorMovementHandler.finalConnector = undefined;
     });
 
     this.connector.addEventListener('mousedown', function(e) {

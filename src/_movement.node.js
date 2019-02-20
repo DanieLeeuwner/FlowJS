@@ -72,10 +72,16 @@ class NodeMovementHandler extends MovementHandler {
   stop(position) {
     super.stop(position);
 
+    var designer = position.designer;
+
     if (position.dx == 0 && position.dy == 0 && this.keepSelected == false) {
       // select node
 
       this.setSelection([ this.activeNode ]);
+
+      if (designer.callbacks.nodeOpened) {
+        designer.callbacks.nodeOpened(this.activeNode);
+      }        
       
     } else {
       for (var i = 0; i < this.nodes.length; i++) {

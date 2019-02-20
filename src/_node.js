@@ -193,7 +193,7 @@ class Node {
     textArea.appendChild(this.titleText);
 
     // subtitle
-    this.var subtitleText = FlowJS.Tools.GenerateSVG('text', {
+    this.subtitleText = FlowJS.Tools.GenerateSVG('text', {
       'x': horizontalMargin,
       'y': 20 + FlowJS.Config.Font.Size,
       'font-size': FlowJS.Config.Font.Size,
