@@ -13,7 +13,7 @@ controls.push({
       }
     ],
     data: {
-      event: 'event_name',
+      event: 'startup',
       output: {
         sample_data: true
       }
@@ -34,7 +34,7 @@ controls.push({
       }
     ],
     data: {
-      event: 'event_name',
+      event: 'startup',
       output: {
         sample_data: true
       }
