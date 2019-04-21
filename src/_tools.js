@@ -3,7 +3,7 @@ var FlowJS = FlowJS || {};
 FlowJS
 
 FlowJS.Tools = {
-  GenerateId: (length) => {    
+  GenerateId: (length) => {
     var pattern = new Array(length + 1).join('x');
     return pattern.replace(/[x]/g, (c) => {
       var r = Math.random() * 16 | 0;
@@ -38,7 +38,7 @@ FlowJS.Tools = {
 
     style = document.createElement('style');
     style.type = 'text/css';
-    style.innerHTML = 
+    style.innerHTML =
      `.FlowJS_Container {
         -webkit-touch-callout: none;
           -webkit-user-select: none;
@@ -50,7 +50,7 @@ FlowJS.Tools = {
 
       .FlowJS_Container:focus {
         outline: 0;
-      } 
+      }
       `;
     document.getElementsByTagName('head')[0].appendChild(style);
 
@@ -87,7 +87,8 @@ FlowJS.Tools = {
       y: y,
       dx: dx,
       dy: dy,
-      designer: designer
+      designer: designer,
+      e: e
     }
   },
 

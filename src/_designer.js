@@ -6,7 +6,7 @@ class Designer {
 
     this.container = data.container;
     this.designContainer = undefined;
-    
+
     this.theme = data.theme || FlowJS.Theme.Light;
 
     this.scale = data.scale || 1;
@@ -20,6 +20,7 @@ class Designer {
 
     this.activeMovementHandler = undefined;
     this.selectionMovementHandler = new SelectionMovementHandler(this);
+    this.designerMovementHandler = new DesignerMovementHandler(this);
     this.nodeMovementHandler = new NodeMovementHandler(this);
     this.connectorMovementHandler = new ConnectorMovementHandler(this);
     this.linkMovementHandler = new LinkMovementHandler(this);
@@ -117,7 +118,7 @@ class Designer {
           var connector = node.getConnector(sourceConnector);
           if (connector != undefined) {
             link.sourceConnector = connector;
-          }          
+          }
           continue;
         }
         if (node.id == targetNode) {
@@ -160,6 +161,7 @@ class Designer {
 
     this._svg.addEventListener('mousedown', FlowJS.Movement.MouseDown);
     this._svg.addEventListener('mousemove', FlowJS.Movement.MouseMove);
+    this._svg.addEventListener('mousewheel', FlowJS.Movement.MouseWheel);
     document.addEventListener('mouseup', FlowJS.Movement.MouseUp);
 
     this.container.addEventListener('keydown', FlowJS.Input.KeyPress);
@@ -195,12 +197,12 @@ class Designer {
     watermarkText.style.color = this.theme.Watermark;
     watermarkText.innerHTML = 'FlowJS';
 
-    this.refreshGrid();
     this.refresh();
   }
 
   refresh() {
     this.refreshNodes();
+    this.refreshGrid();
   }
 
   refreshGrid() {
@@ -469,6 +471,6 @@ class Designer {
     if (this.callbacks.linkDeleted) {
       this.callbacks.linkDeleted(link);
     }
-  } 
+  }
 
 }

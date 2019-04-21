@@ -15,8 +15,8 @@ class Node {
 
     this.type = data.type || 'unknown';
 
-    this.title = data.title;
-    this.subtitle = data.subtitle;
+    this.name = data.name;
+    this.description = data.description;
 
     this.selected = false;
     this.initialX = 0;
@@ -65,8 +65,8 @@ class Node {
   }
 
   refreshText() {
-    this.titleText.innerHTML = this.title;
-    this.subtitleText.innerHTML = this.subtitle;
+    this.nameText.innerHTML = this.name;
+    this.descriptionText.innerHTML = this.description;
   }
 
   refreshImage() {
@@ -105,8 +105,8 @@ class Node {
       y: this.y,
 
       type: this.type,
-      title: this.title,
-      subtitle: this.subtitle,
+      name: this.name,
+      description: this.description,
       hint: this.hint,
 
       data: this.data,
@@ -130,7 +130,7 @@ class Node {
     this.element = FlowJS.Tools.GenerateSVG('g', {
       'width': this.width,
       'height': this.height,
-      'transform': `translate(${this.x}, ${this.y})`
+      'transform': `translate(${this.x}, ${this.y})`,
     });
 
     this._renderBackground();
@@ -155,7 +155,7 @@ class Node {
       'x': 0,
       'y': 0,
       'rx': 5,
-      'ry': 5,
+      'ry': 5
     });
     this.element.appendChild(backgroundRectangle);
 
@@ -177,7 +177,7 @@ class Node {
       'x': horizontalMargin,
       'y': 0,
       'width': this.width - horizontalMargin * 2,
-      'height': this.height  
+      'height': this.height,
     });
     clippingArea.appendChild(clippingRectangle);
 
@@ -187,24 +187,22 @@ class Node {
     });
     this.element.appendChild(textArea);
 
-    // title
-    this.titleText = FlowJS.Tools.GenerateSVG('text', {
+    // name
+    this.nameText = FlowJS.Tools.GenerateSVG('text', {
       'x': horizontalMargin,
       'y': 20,
       'font-size': FlowJS.Config.Font.Size,
-      'font-weight': 'bold',
-      'color': 'blue'
+      'font-weight': 'bold'
     });
-    textArea.appendChild(this.titleText);
+    textArea.appendChild(this.nameText);
 
-    // subtitle
-    this.subtitleText = FlowJS.Tools.GenerateSVG('text', {
+    // description
+    this.descriptionText = FlowJS.Tools.GenerateSVG('text', {
       'x': horizontalMargin,
       'y': 20 + FlowJS.Config.Font.Size,
       'font-size': FlowJS.Config.Font.Size,
     });
-    textArea.appendChild(this.subtitleText);
-
+    textArea.appendChild(this.descriptionText);
   }
 
   _renderMouseEventListener() {
@@ -222,6 +220,10 @@ class Node {
     actionArea.designer = this.designer;
 
     actionArea.addEventListener('mousedown', (e) => {
+      if (e.button != 0) {
+        return;
+      }
+
       var position = FlowJS.Tools.GetPosition(e);
       var designer = e.target.designer;
       var node = e.target.node;

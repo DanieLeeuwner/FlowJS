@@ -9,8 +9,7 @@ class Connector {
     this.offsetX = 0;
     this.offsetY = 0;
 
-    this.name = data.name;
-    this.key = data.key;
+    this.name = data.name || data;
 
     this.type = FlowJS.ConnectorType.None;
 
@@ -29,7 +28,6 @@ class Connector {
       id: this.id,
       hint: this.hint,
       name: this.name,
-      type: this.type
     }
 
     return connector;

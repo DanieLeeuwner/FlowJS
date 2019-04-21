@@ -24,21 +24,22 @@
 
   <script type="text/javascript" src="src/_movement.js"></script>
   <script type="text/javascript" src="src/_movement.selection.js"></script>
+  <script type="text/javascript" src="src/_movement.designer.js"></script>
   <script type="text/javascript" src="src/_movement.node.js"></script>
   <script type="text/javascript" src="src/_movement.connector.js"></script>
   <script type="text/javascript" src="src/_movement.link.js"></script>
-  
+
   <script type="text/javascript" src="src/_input.js"></script>
   <script type="text/javascript" src="src/_input.node.js"></script>
   <script type="text/javascript" src="src/_input.link.js"></script>
-  
+
   <script type="text/javascript" src="src/_designer.js"></script>
   <script type="text/javascript" src="src/_node.js"></script>
   <script type="text/javascript" src="src/_connector.js"></script>
   <script type="text/javascript" src="src/_link.js"></script>
 
   <script type="text/javascript">
-    
+
     var flo = new Designer({
       container: container,
       scale: 0.8,
@@ -67,7 +68,7 @@
       console.log(e);
 
       lastCallback = callback;
-    } 
+    }
 
     function renderTestNode(inputCount, outputCount) {
       var inputs = [];
@@ -75,7 +76,7 @@
 
       for (var i = 0; i < inputCount; i++) {
         inputs.push(new Connector({
-          name: 'I:' + (i + 1) 
+          name: 'I:' + (i + 1)
         }));
       }
 

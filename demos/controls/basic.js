@@ -65,3 +65,17 @@ controls.push({
     }
   }
 });
+
+controls.push({
+  title: 'Login',
+  node: {
+    name: 'Login',
+    description: 'User Authentication',
+    type: 'code',    
+    inputs: [ 'Execute' ]
+    outputs: [ 'OnLoginCompleted' ],
+    data: {
+      code: `console.log(input.value);\nconsole.log(output.value);\nthis.next();`
+    }
+  }
+});
