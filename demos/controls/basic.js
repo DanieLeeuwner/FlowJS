@@ -13,7 +13,7 @@ controls.push({
       }
     ],
     data: {
-      code: `alert(input.text);`
+      code: `alert('hello world');`
     }
   }
 });
