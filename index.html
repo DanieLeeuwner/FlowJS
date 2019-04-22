@@ -17,34 +17,19 @@
 
   <div id="container"></div>
 
-  <script type="text/javascript" src="src/_tools.js"></script>
-  <script type="text/javascript" src="src/_path.js"></script>
-  <script type="text/javascript" src="src/_config.js"></script>
-  <script type="text/javascript" src="src/_theme.js"></script>
-
-  <script type="text/javascript" src="src/_movement.js"></script>
-  <script type="text/javascript" src="src/_movement.selection.js"></script>
-  <script type="text/javascript" src="src/_movement.designer.js"></script>
-  <script type="text/javascript" src="src/_movement.node.js"></script>
-  <script type="text/javascript" src="src/_movement.connector.js"></script>
-  <script type="text/javascript" src="src/_movement.link.js"></script>
-
-  <script type="text/javascript" src="src/_input.js"></script>
-  <script type="text/javascript" src="src/_input.node.js"></script>
-  <script type="text/javascript" src="src/_input.link.js"></script>
-
-  <script type="text/javascript" src="src/_designer.js"></script>
-  <script type="text/javascript" src="src/_node.js"></script>
-  <script type="text/javascript" src="src/_connector.js"></script>
-  <script type="text/javascript" src="src/_link.js"></script>
+  <script type="text/javascript" src="dist/flow.js"></script>
 
   <script type="text/javascript">
+
+    var exportedData = {
+
+    }
 
     var flo = new Designer({
       container: container,
       scale: 0.8,
       theme: FlowJS.Theme.Dark,
-      import: JSON.parse(localStorage.getItem('exp')),
+      //import: exportedData,
       callbacks: {
         linkCreated: (e) => { console.log('Link created'); console.log(e); },
         linkDeleted: (e) => { console.log('Link deleted'); console.log(e); },
@@ -89,8 +74,8 @@
       flo.createNode({
         x: 60,
         y: 60,
-        title: `Test ${inputCount} => ${outputCount}`,
-        subtitle: 'hi, this is world.',
+        name: `Test node`,
+        description: `inputs: ${inputCount}, outputs: ${outputCount}`,
         inputs: inputs,
         outputs: outputs
       });

@@ -1,0 +1,26 @@
+{
+  "entry": {
+    "flow.js": [
+      "src/_tools.js",
+      "src/_path.js",
+      "src/_config.js",
+      "src/_theme.js",
+      "src/_movement.js",
+      "src/_movement.selection.js",
+      "src/_movement.designer.js",
+      "src/_movement.node.js",
+      "src/_movement.connector.js",
+      "src/_movement.link.js",
+      "src/_input.js",
+      "src/_input.node.js",
+      "src/_input.link.js",
+      "src/_designer.js",
+      "src/_node.js",
+      "src/_connector.js",
+      "src/_link.js"
+    ]
+  },
+  "output": {
+    "path": "dist"
+  }
+}

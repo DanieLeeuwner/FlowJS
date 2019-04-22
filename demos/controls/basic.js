@@ -23,7 +23,7 @@ controls.push({
   node: {
     title: 'prompt',
     subtitle: 'prompt input value',
-    type: 'code',    
+    type: 'code',
     inputs: [
       {
         name: 'IN',
@@ -47,7 +47,7 @@ controls.push({
   node: {
     title: 'code',
     subtitle: 'configured code',
-    type: 'code',    
+    type: 'code',
     inputs: [
       {
         name: 'IN',
@@ -67,13 +67,55 @@ controls.push({
 });
 
 controls.push({
-  title: 'Login',
+  title: 'FLOW',
   node: {
-    name: 'Login',
-    description: 'User Authentication',
-    type: 'code',    
-    inputs: [ 'Execute' ]
-    outputs: [ 'OnLoginCompleted' ],
+    name: 'FLOW',
+    description: '',
+    type: 'code',
+    inputs: [ ],
+    outputs: [ 'OUT' ],
+    data: {
+      code: `console.log(input.value);\nconsole.log(output.value);\nthis.next();`
+    }
+  }
+});
+
+controls.push({
+  title: 'BASED',
+  node: {
+    name: 'BASED',
+    description: '',
+    type: 'code',
+    inputs: [ 'IN' ],
+    outputs: [ 'OUT' ],
+    data: {
+      code: `console.log(input.value);\nconsole.log(output.value);\nthis.next();`
+    }
+  }
+});
+
+controls.push({
+  title: 'PROGRAMMING',
+  node: {
+    name: 'PROGRAMMING',
+    description: '',
+    type: 'code',
+    inputs: [ 'IN' ],
+    outputs: [  ],
+    data: {
+      code: `console.log(input.value);\nconsole.log(output.value);\nthis.next();`
+    }
+  }
+});
+
+controls.push({
+  title: 'FlowJS',
+  node: {
+    name: 'FlowJS',
+    description: '',
+    type: 'code',
+    inputs: [ 'IN' ],
+    outputs: [ 'OUT' ],
     data: {
       code: `console.log(input.value);\nconsole.log(output.value);\nthis.next();`
     }

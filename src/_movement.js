@@ -65,8 +65,6 @@ FlowJS.Movement = {
       return;
     }
 
-    console.log(e.offsetX);
-
     var position = FlowJS.Tools.GetPosition(e);
     e.preventDefault();
 

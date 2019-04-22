@@ -26,8 +26,6 @@ class DesignerMovementHandler extends MovementHandler {
     var scrollX = this.initialScrollX - dx;
     var scrollY = this.initialScrollY - dy;
 
-    console.log(dx);
-
     this.designer.designContainer.scrollTo(scrollX, scrollY);
   }
 
