@@ -32,6 +32,7 @@ class Designer {
     this.callbacks = {
       linkCreated: undefined,
       linkDeleted: undefined,
+      linkSelected: undefined,
       nodeSelected: undefined,
       nodeUnselected: undefined,
       nodeOpened: undefined,
@@ -42,6 +43,7 @@ class Designer {
     if (data.callbacks) {
       this.callbacks.linkCreated = data.callbacks.linkCreated || undefined;
       this.callbacks.linkDeleted = data.callbacks.linkDeleted || undefined;
+      this.callbacks.linkSelected = data.callbacks.linkSelected || undefined;
       this.callbacks.nodeSelected = data.callbacks.nodeSelected || undefined;
       this.callbacks.nodeUnselected = data.callbacks.nodeUnselected || undefined;
       this.callbacks.nodeOpened = data.callbacks.nodeOpened || undefined;

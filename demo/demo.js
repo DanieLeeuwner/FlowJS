@@ -6,8 +6,16 @@ var demoDesigner = new Designer({
   scale: 1,
   theme: FlowJS.Theme.Dark,
   callbacks: {
-    nodeUnselected: (e) => { nodeUnselected(e); },
-    nodeOpened: (e) => { nodeSelected(e); },
+    //nodeUnselected: (e) => { nodeUnselected(e); },
+    //nodeOpened: (e) => { nodeSelected(e); },
+    linkCreated: (e) => { console.log(e); },
+    linkDeleted: (e) => { console.log(e); },
+    linkSelected: (e) => { console.log(e); },
+    nodeSelected: (e) => { console.log(e); },
+    nodeUnselected: (e) => { console.log(e); },
+    nodeOpened: (e) => { console.log(e); },
+    nodeDeleted: (e) => { console.log(e); },
+    nodeMoved: (e) => { console.log(e); }
   },
 });
 
@@ -54,11 +62,15 @@ function registerEvents() {
 
     x -= tempElement.initialX;
     y -= tempElement.initialY;
-    
+
     x /= demoDesigner.scale;
     y /= demoDesigner.scale;
 
-    var node = JSON.parse(JSON.stringify(control.node));
+    var node = JSON.parse(JSON.stringify(control));
+    node.data = {};
+    for (var config of node.configParameters) {
+      node.data[config] = 'value';
+    }
 
     node.x = x;
     node.y = y;
@@ -111,8 +123,12 @@ function createDisplayNode(control) {
   var element = document.createElement('div');
 
   element.className = 'control';
-  element.innerHTML = control.title;
+  element.innerHTML = control.name;
   element.control = control;
+
+  if (control.backgroundColor) {
+    element.style.backgroundColor = control.backgroundColor;
+  }
 
   return element;
 }
@@ -125,16 +141,7 @@ function nodeUnselected(nodes) {
 
 function nodeSelected(node) {
   currentNode = node;
-
-  switch (currentNode.type) {
-    case 'code':
-      showCode(currentNode.data.code);
-      break;
-
-    case 'event':
-      showCode(JSON.stringify(currentNode.data, null, 2));
-      break;
-  }
+  showCode(JSON.stringify(currentNode.data, null, 2));
 }
 
 function setCode(value) {
@@ -154,7 +161,7 @@ function hideCode() {
 
 function inputKeyDown(e) {
   if (currentNode == undefined) return;
- 
+
   if (e.keyCode == 9) {
     e.preventDefault();
     codeArea.insertAtCaret('  ');
@@ -235,7 +242,7 @@ function getLinks(id) {
     if (link.source == id) {
       links.push(link);
     }
-  } 
+  }
   return links;
 }
 
@@ -246,7 +253,7 @@ function getNode(id) {
     if (node.id == nodeId) {
       return node;
     }
-  } 
+  }
 }
 
 function executeLinks(links, data) {

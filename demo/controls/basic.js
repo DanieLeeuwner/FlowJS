@@ -121,3 +121,17 @@ controls.push({
     }
   }
 });
+
+controls.push({
+  title: 'Title goes here',
+  node: {
+    name: 'Name here',
+    description: 'Description here',
+    type: 'code',
+    inputs: [ 'In 1', 'In 2' ],
+    outputs: [ 'Out 1', 'Out 2' ],
+    data: {
+      code: `console.log(input.value);\nconsole.log(output.value);\nthis.next();`
+    }
+  }
+});

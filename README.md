@@ -10,12 +10,10 @@ FlowJS is a visual designer to create and manipulate nodes and links between the
 - [Designer](#designer)
 - [Configuration](#configuration)
 - [Nodes](#nodes)
-- [Events](#events)
-- [Controls](#controls)
+- [Callbacks](#callbacks)
+- [Validiation](#validation)
 - [Export](#export)
 - [Import](#import)
-- [Other](#other)
-  - [Changing the scale](#changing-the-scale)
 - [Roadmap](#roadmap)
 
 ### Files 
@@ -44,27 +42,27 @@ var designer = new Designer({
 
 The FlowJS designer takes a couple of configuration options.
 
-| Option      | Description                                                  |
-| ----------- | ------------------------------------------------------------ |
-| `container` | HTML element to display designer. See [Designer](#designer). |
-| `scale`     | Initial scale to display. See [Changing the scale](#changing-the-scale). |
-| `theme`     | Theme configuration object. See [Theme](#theme).             |
-| `callbacks` | Callback events to fire for specific actions. See [Events](#events). |
-| `import`    | Nodes and links to import. See [Export](#export).            |
-| `width`     | Width of the designer area. Default 5000.                    |
-| `height`    | Height of the designer area. Default 5000.                   |
+| Option       | Description                                                  |
+| ------------ | ------------------------------------------------------------ |
+| `container`  | HTML element to display designer. See [Designer](#designer). |
+| `scale`      | Initial scale to display. Default 1. See [Changing the scale](#changing-the-scale). |
+| `theme`      | Theme configuration object. See [Theme](#theme).             |
+| `callbacks`  | Callback events to fire for specific actions. See [Callbacks](#callbacks). |
+| `validation` | Validation events to fire for specific actions. See [Validation](#validation). |
+| `import`     | Nodes and links to import. See [Import](#import).            |
+| `width`      | Width of the designer area. Default 5000.                    |
+| `height`     | Height of the designer area. Default 5000.                   |
 
 Example of initializing the designer with the default dark theme:
 
 ```js
 var designer = new Designer({
   container: container,
-  scale: 1,
   theme: FlowJS.Theme.Dark
 });
 ```
 
-
+Some aspects of the designer are defined within `./src/_config.js`. Like with theme changes, the designer must be refreshed for changes to take effect.
 
 ### Theme
 
@@ -84,20 +82,70 @@ The theme object contains the following properties:
 | `ConnectorFill`   | Connector fill color.                                        |
 | `Watermark`       | FlowJS watermark color.                                      |
 
-Changes to the theme requires the designer to be refreshed.
+Example of changing the background color of the designer:
 
 ```js
-designer.theme.Background = '#11FFFF';
+designer.theme.Background = '#110000';
 designer.refresh();
 ```
 
 ### Nodes
 
-asdf
+Creating a node requires a node object to be passed to the `designer.createNode` function.
 
-### Events
+Node objects contain the following properties:
 
-asdf
+| Property      | Description                          |
+| ------------- | ------------------------------------ |
+| `name`        | Name displayed on the node.          |
+| `description` | Description displayed on the node.   |
+| `inputs`      | Array of input names.                |
+| `outputs`     | Array of output names.               |
+| `data`        | Custom node configuration.           |
+| `x`           | X coordinate of the node. Default 0. |
+| `y`           | Y coordinate of the node. Default 0. |
+
+The designer automatically adds its scroll position values to the provided `x` and `y` values before creating the node.
+
+Example of creating a node with two inputs and two outputs:
+
+```js
+var newNode = {
+    name: 'Name here',
+    description: 'Description here',
+    inputs: [ 'In 1', 'In 2' ],
+    outputs: [ 'Out 1', 'Out 2' ],
+    data: { }
+}
+
+designer.createNode(newNode);
+```
+
+
+
+![flow_based_programming](.\docs\images\basic_node.png)
+
+### Callbacks
+
+Callbacks can be specified as part of the designer initialization process. These callbacks allow rules to be applied to the process. See [Configuration](#configuration).
+
+All callback events should be functions that expect the specified parameter. 
+
+| Callback         | Parameter | Description                        |
+| ---------------- | --------- | ---------------------------------- |
+| `linkCreated`    | Link      | Link is created between two nodes. |
+| `linkSelected`   | Link      | Link is selected.                  |
+| `linkUnselected` | Link      | Link is unselected.                |
+| `linkDeleted`    | Link      | Link is deleted.                   |
+| `nodeSelected`   | Node[]    | Node is selected.                  |
+| `nodeUnselected` | Node[]    | Node is unselected.                |
+| `nodeDeleted`    | Node[]    | Node is deleted.                   |
+| `nodeOpened`     | Node[]    | A selected node is clicked.        |
+| `nodeMoved`      | Node[]    | Node is moved.                     |
+
+### Validation
+
+Validation actions 
 
 ### Controls
 
@@ -110,17 +158,6 @@ asdf
 ### Import
 
 asdf
-
-### Other
-
-#### Changing the scale
-
-```js
-designer.scale = 2;
-designer.refresh();
-```
-
-
 
 ### Roadmap
 
