@@ -54,7 +54,7 @@ function registerEvents() {
 
     x -= tempElement.initialX;
     y -= tempElement.initialY;
-    
+
     x /= demoDesigner.scale;
     y /= demoDesigner.scale;
 
@@ -153,7 +153,7 @@ function hideCode() {
 
 function inputKeyDown(e) {
   if (currentNode == undefined) return;
- 
+
   if (e.keyCode == 9) {
     e.preventDefault();
     codeArea.insertAtCaret('  ');
@@ -234,7 +234,7 @@ function getLinks(id) {
     if (link.source == id) {
       links.push(link);
     }
-  } 
+  }
   return links;
 }
 
@@ -245,7 +245,7 @@ function getNode(id) {
     if (node.id == nodeId) {
       return node;
     }
-  } 
+  }
 }
 
 function executeLinks(links, data) {
