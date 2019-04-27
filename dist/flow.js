@@ -1,6 +1,6 @@
 /*
 Created by filepack
-Date: Monday, April 22, 2019
+Date: Saturday, April 27, 2019
 */
 
 /*
@@ -292,7 +292,7 @@ FlowJS.Palette = {
     '#9FD1FF',
     '#FFAEF7',
   ],
-  
+
   Vibrant: [
     '#FF0000',
     '#FF8100',
@@ -316,8 +316,8 @@ FlowJS.Theme = {
     Grid: '#CCC',
     Background: '#FFF',
     Focus: 'orange',
-    SelectionBackground: 'rgba(100, 100, 100, 0.2)',
     SelectionBorder: 'rgba(100, 100, 100, 0.8)',
+    SelectionFill: 'rgba(100, 100, 100, 0.2)',
     Link: FlowJS.Palette.DefaultLight,
     ConnectorBorder: '#000',
     ConnectorFill: '#FFF',
@@ -327,8 +327,8 @@ FlowJS.Theme = {
     Grid: '#333',
     Background: '#222',
     Focus: 'orange',
-    SelectionBackground: 'rgba(200, 200, 200, 0.2)',
     SelectionBorder: 'rgba(200, 200, 200, 0.8)',
+    SelectionFill: 'rgba(200, 200, 200, 0.2)',
     Link: FlowJS.Palette.DefaultDark,
     ConnectorBorder: '#DDD',
     ConnectorFill: '#FFF',
@@ -487,7 +487,7 @@ class SelectionMovementHandler extends MovementHandler {
     this.element = FlowJS.Tools.GenerateSVG('rect');
     this.designer._svg.appendChild(this.element);
 
-    this.element.style.fill = this.designer.theme.SelectionBackground;
+    this.element.style.fill = this.designer.theme.SelectionFill;
     this.element.style.stroke = this.designer.theme.SelectionBorder;
     this.element.style.strokeWidth = '0.5px';
   }

@@ -13,7 +13,7 @@ class SelectionMovementHandler extends MovementHandler {
     this.element = FlowJS.Tools.GenerateSVG('rect');
     this.designer._svg.appendChild(this.element);
 
-    this.element.style.fill = this.designer.theme.SelectionBackground;
+    this.element.style.fill = this.designer.theme.SelectionFill;
     this.element.style.stroke = this.designer.theme.SelectionBorder;
     this.element.style.strokeWidth = '0.5px';
   }
