@@ -1,6 +1,6 @@
 /*
 Created by filepack
-Date: Saturday, April 27, 2019
+Date: Sunday, April 28, 2019
 */
 
 /*
@@ -8,8 +8,6 @@ File: src/_tools.js
 */
 
 var FlowJS = FlowJS || {};
-
-FlowJS
 
 FlowJS.Tools = {
   GenerateId: (length) => {
@@ -274,7 +272,7 @@ FlowJS.Config = {
   Font: {
     Family: '"Lucida Console", Monaco, monospace',
     Size: 14,
-  },
+  }
 }
 
 /*
@@ -482,6 +480,8 @@ class SelectionMovementHandler extends MovementHandler {
   }
 
   start(position) {
+    this.designer.callbacks.invokeNodeUnselected(this.designer.nodeMovementHandler.nodes);
+
     super.start(position);
 
     this.element = FlowJS.Tools.GenerateSVG('rect');
@@ -513,16 +513,14 @@ class SelectionMovementHandler extends MovementHandler {
 
     if (position.dx == 0 && position.dy == 0) {
       this.designer.nodeMovementHandler.setSelection();
+    } else {
+      this.designer.callbacks.invokeNodeSelected(this.designer.nodeMovementHandler.nodes);
     }
 
     this.designer._svg.removeChild(this.element);
     this.element = undefined;
 
     this.designer.activeMovementHandler = this.designer.nodeMovementHandler;
-
-    if (this.designer.nodeMovementHandler.nodes.length > 0 && this.designer.callbacks.nodeSelected) {
-      this.designer.callbacks.nodeSelected(this.designer.nodeMovementHandler.nodes);
-    }
   }
 }
 
@@ -589,7 +587,7 @@ class NodeMovementHandler extends MovementHandler {
 
     for (var i = 0; i < this.designer.nodes.length; i++) {
       var node = this.designer.nodes[i];
-      
+
       if (node.inRectangle(xi, yi, xf, yf)) {
         nodes.push(node);
       }
@@ -632,7 +630,7 @@ class NodeMovementHandler extends MovementHandler {
       if (x < 0) x = 0;
       if (y < 0) y = 0;
 
-      if (x + node.width > this.designer.width) x = this.designer.width - node.width;    
+      if (x + node.width > this.designer.width) x = this.designer.width - node.width;
       if (y + node.height > this.designer.height) y = this.designer.height - node.height;
 
       node.x = x;
@@ -640,24 +638,21 @@ class NodeMovementHandler extends MovementHandler {
       node.refreshPosition();
     }
 
-    this.designer.refreshNodeLinks(this.nodes);  
+    this.designer.refreshNodeLinks(this.nodes);
   }
 
   stop(position) {
     super.stop(position);
 
-    var designer = position.designer;
-
-    if (position.dx == 0 && position.dy == 0 && this.keepSelected == false) {
-      // select node
-
-      this.setSelection([ this.activeNode ]);
-
-      if (designer.callbacks.nodeOpened) {
-        designer.callbacks.nodeOpened(this.activeNode);
-      }        
-      
+    if (position.dx == 0 && position.dy == 0) {
+      if (this.keepSelected == false) {
+        this.setSelection([ this.activeNode ]);
+        this.designer.callbacks.invokeNodeSelected([ this.activeNode ]);
+      } else {
+        this.designer.callbacks.invokeNodeOpened(this.activeNode);
+      }
     } else {
+      this.designer.callbacks.invokeNodeMoved(this.nodes);
       for (var i = 0; i < this.nodes.length; i++) {
         var node = this.nodes[i];
 
@@ -677,20 +672,13 @@ class NodeMovementHandler extends MovementHandler {
     }
 
     this.activeNode = undefined;
-
-    if (this.nodes.length > 0 && this.designer.callbacks.nodeSelected) {
-      this.designer.callbacks.nodeSelected(this.nodes);
-    }
   }
 
   reset() {
-    if (this.designer.nodeMovementHandler.nodes.length > 0 && this.designer.callbacks.nodeUnselected) {
-      this.designer.callbacks.nodeUnselected(this.designer.nodeMovementHandler.nodes);
-    }
-    
-    this.designer.nodeMovementHandler.setSelection();
+    this.setSelection();
   }
 }
+
 
 /*
 File: src/_movement.connector.js
@@ -791,6 +779,7 @@ class LinkMovementHandler extends MovementHandler {
       this.activeLink.targetConnector.selected = false;
       this.activeLink.unfocus();
     }
+
     this.activeLink = undefined;
   }
 
@@ -809,11 +798,15 @@ class LinkMovementHandler extends MovementHandler {
       // select link
       this.activeLink = this.currentLink;
       this.focus();
+
+      this.designer.callbacks.invokeLinkSelected(this.activeLink);
     }
   }
 
   reset() {
-    this.designer.linkMovementHandler.unfocus();
+    this.designer.callbacks.invokeLinkUnselected(this.activeLink);
+
+    this.unfocus();
   }
 }
 
@@ -886,6 +879,7 @@ class NodeInputHandler extends InputHandler {
         this.designer.deleteSelectedNodes();
         break;
       case 27:
+        this.designer.callbacks.invokeNodeUnselected(this.designer.nodeMovementHandler.nodes);
         this.designer.nodeMovementHandler.setSelection();
         break;
     }
@@ -958,6 +952,8 @@ class Designer {
 
     this.callbacks = {
       linkCreated: undefined,
+      linkSelected: undefined,
+      linkUnselected: undefined,
       linkDeleted: undefined,
       nodeSelected: undefined,
       nodeUnselected: undefined,
@@ -968,13 +964,18 @@ class Designer {
 
     if (data.callbacks) {
       this.callbacks.linkCreated = data.callbacks.linkCreated || undefined;
+      this.callbacks.linkSelected = data.callbacks.linkSelected || undefined;
+      this.callbacks.linkUnselected = data.callbacks.linkUnselected || undefined;
       this.callbacks.linkDeleted = data.callbacks.linkDeleted || undefined;
       this.callbacks.nodeSelected = data.callbacks.nodeSelected || undefined;
       this.callbacks.nodeUnselected = data.callbacks.nodeUnselected || undefined;
-      this.callbacks.nodeOpened = data.callbacks.nodeOpened || undefined;
       this.callbacks.nodeDeleted = data.callbacks.nodeDeleted || undefined;
+      this.callbacks.nodeOpened = data.callbacks.nodeOpened || undefined;
       this.callbacks.nodeMoved = data.callbacks.nodeMoved || undefined;
     }
+
+    // register callback event handlers
+    this._registerCallbackHandlers();
 
     this.validation = {
       linkCreate: undefined,
@@ -1335,6 +1336,8 @@ class Designer {
       }
     }
 
+    this.callbacks.invokeNodeDeleted(deleteNodes);
+
     for (var i = 0; i < deleteNodes.length; i++) {
       var node = deleteNodes[i];
       var index = this.nodes.indexOf(node);
@@ -1381,9 +1384,7 @@ class Designer {
     link.render();
     link.refresh();
 
-    if (this.callbacks.linkCreated) {
-      this.callbacks.linkCreated(link);
-    }
+    this.callbacks.invokeLinkCreated(link);
   }
 
   deleteLink(link) {
@@ -1395,12 +1396,75 @@ class Designer {
 
     this.links.splice(index, 1);
 
-    if (this.callbacks.linkDeleted) {
-      this.callbacks.linkDeleted(link);
-    }
+    this.callbacks.invokeLinkDeleted(link);
   }
 
+  _registerCallbackHandlers() {
+    this.callbacks.invokeLinkCreated = (link) => {
+      if (!this.callbacks.linkCreated) return;
+      if (!link) return;
+
+      this.callbacks.linkCreated(link);
+    };
+
+    this.callbacks.invokeLinkDeleted = (link) => {
+      if (!this.callbacks.linkDeleted) return;
+      if (!link) return;
+
+      this.callbacks.linkDeleted(link);
+    };
+
+    this.callbacks.invokeLinkSelected = (link) => {
+      if (!this.callbacks.linkSelected) return;
+      if (!link) return;
+
+      this.callbacks.linkSelected(link);
+    };
+
+    this.callbacks.invokeLinkUnselected = (link) => {
+      if (!this.callbacks.linkUnselected) return;
+      if (!link) return;
+
+      this.callbacks.linkUnselected(link);
+    };
+
+    this.callbacks.invokeNodeSelected = (nodes) => {
+      if (!this.callbacks.nodeSelected) return;
+      if (!nodes || nodes.length == 0) return;
+
+      this.callbacks.nodeSelected(nodes);
+    };
+
+    this.callbacks.invokeNodeUnselected = (nodes) => {
+      if (!this.callbacks.nodeUnselected) return;
+      if (!nodes || nodes.length == 0) return;
+
+      this.callbacks.nodeUnselected(nodes);
+    };
+
+    this.callbacks.invokeNodeOpened = (node) => {
+      if (!this.callbacks.nodeOpened) return;
+      if (!node) return;
+
+      this.callbacks.nodeOpened(node);
+    };
+
+    this.callbacks.invokeNodeDeleted = (nodes) => {
+      if (!this.callbacks.nodeDeleted) return;
+      if (!nodes || nodes.length == 0) return;
+
+      this.callbacks.nodeDeleted(nodes);
+    };
+
+    this.callbacks.invokeNodeMoved = (nodes) => {
+      if (!this.callbacks.nodeMoved) return;
+      if (!nodes || nodes.length == 0) return;
+
+      this.callbacks.nodeMoved(nodes);
+    };
+  }
 }
+
 
 /*
 File: src/_node.js
@@ -1478,7 +1542,7 @@ class Node {
   }
 
   refreshImage() {
-
+    // image not supported
   }
 
   refreshBackground() {
@@ -1543,7 +1607,7 @@ class Node {
 
     this._renderBackground();
 
-    this._renderTextArea();    
+    this._renderTextArea();
 
     this._renderMouseEventListener();
 
@@ -1616,7 +1680,7 @@ class Node {
   _renderMouseEventListener() {
     var actionArea = FlowJS.Tools.GenerateSVG('rect', {
       'x': 0,
-      'y': 0,      
+      'y': 0,
       'width': this.width,
       'height': this.height,
       'cursor': FlowJS.Config.Node.Cursor
@@ -1640,25 +1704,23 @@ class Node {
       designer.nodeMovementHandler.keepSelected = node.selected;
 
       var currentNodes = designer.nodeMovementHandler.nodes;
-      if (e.ctrlKey == false && (currentNodes.length > 1 || (currentNodes.length == 1 && currentNodes[0] != node))) {
-        if (designer.callbacks.nodeUnselected) {
-          designer.callbacks.nodeUnselected(designer.nodeMovementHandler.nodes);
-        }        
+      if (e.shiftKey == false && (currentNodes.length > 1 || (currentNodes.length == 1 && currentNodes[0] != node))) {
+
       }
-      
+
       if (node.selected == false) {
         var nodes = designer.nodeMovementHandler.nodes;
-        if (e.ctrlKey) {
+        if (e.shiftKey) {
           nodes.push(node);
         } else {
           nodes = [ node ];
         }
         designer.nodeMovementHandler.setSelection(nodes);
-        designer.nodeMovementHandler.keepSelected = e.ctrlKey;
+        designer.nodeMovementHandler.keepSelected = e.shiftKey;
       }
 
       designer.nodeMovementHandler.start(position);
-      FlowJS.Tools.BringToFront(designer._nodeContainer, node.element);      
+      FlowJS.Tools.BringToFront(designer._nodeContainer, node.element);
     });
   }
 
@@ -1953,7 +2015,7 @@ class Link {
     FlowJS.Tools.BringToFront(this.designer._linkContainer, this.element);
     FlowJS.Tools.BringToFront(this.designer._linkContainer, this.overlay);
 
-    this.element.style.stroke = this.designer.theme.Focus;    
+    this.element.style.stroke = this.designer.theme.Focus;
     this.sourceConnector.focus();
     this.targetConnector.focus();
   }
@@ -1989,7 +2051,7 @@ class Link {
         data = FlowJS.PathTools.GetDataDirect(type, sourcePosition, targetPosition);
         break;
       case FlowJS.LinkStyle.Spline:
-        data = FlowJS.PathTools.GetDataSpline(type, sourcePosition, targetPosition);      
+        data = FlowJS.PathTools.GetDataSpline(type, sourcePosition, targetPosition);
         break;
     }
 
@@ -2018,7 +2080,7 @@ class Link {
       this.shadowElement.style.stroke = FlowJS.Config.Link.Shadow.Color || this.stroke;
       this.shadowElement.style.fill = 'none';
       this.shadowElement.style.strokeOpacity = shadowOpacity;
-      this.shadowElement.style.strokeWidth = shadowThickness; 
+      this.shadowElement.style.strokeWidth = shadowThickness;
     }
   }
 
@@ -2034,7 +2096,7 @@ class Link {
   }
 
   _renderOverlay() {
-    var thickness = FlowJS.Config.Link.Thickness;    
+    var thickness = FlowJS.Config.Link.Thickness;
     var shadowThickness = FlowJS.Config.Link.Shadow.Thickness;
 
     this.overlay = FlowJS.Tools.GenerateSVG('path');
@@ -2058,7 +2120,7 @@ class Link {
 
       link.focus();
 
-      link.designer.linkMovementHandler.currentLink = link;      
+      link.designer.linkMovementHandler.currentLink = link;
     });
 
     this.overlay.addEventListener('mouseout', (e) => {
@@ -2093,7 +2155,7 @@ class Link {
 
     this.designer._linkContainer.removeChild(this.element);
 
-    this.designer._linkContainer.removeChild(this.overlay);    
+    this.designer._linkContainer.removeChild(this.overlay);
   }
 }
 

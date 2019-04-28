@@ -70,7 +70,7 @@ class Node {
   }
 
   refreshImage() {
-
+    // image not supported
   }
 
   refreshBackground() {
@@ -135,7 +135,7 @@ class Node {
 
     this._renderBackground();
 
-    this._renderTextArea();    
+    this._renderTextArea();
 
     this._renderMouseEventListener();
 
@@ -208,7 +208,7 @@ class Node {
   _renderMouseEventListener() {
     var actionArea = FlowJS.Tools.GenerateSVG('rect', {
       'x': 0,
-      'y': 0,      
+      'y': 0,
       'width': this.width,
       'height': this.height,
       'cursor': FlowJS.Config.Node.Cursor
@@ -232,25 +232,23 @@ class Node {
       designer.nodeMovementHandler.keepSelected = node.selected;
 
       var currentNodes = designer.nodeMovementHandler.nodes;
-      if (e.ctrlKey == false && (currentNodes.length > 1 || (currentNodes.length == 1 && currentNodes[0] != node))) {
-        if (designer.callbacks.nodeUnselected) {
-          designer.callbacks.nodeUnselected(designer.nodeMovementHandler.nodes);
-        }        
+      if (e.shiftKey == false && (currentNodes.length > 1 || (currentNodes.length == 1 && currentNodes[0] != node))) {
+
       }
-      
+
       if (node.selected == false) {
         var nodes = designer.nodeMovementHandler.nodes;
-        if (e.ctrlKey) {
+        if (e.shiftKey) {
           nodes.push(node);
         } else {
           nodes = [ node ];
         }
         designer.nodeMovementHandler.setSelection(nodes);
-        designer.nodeMovementHandler.keepSelected = e.ctrlKey;
+        designer.nodeMovementHandler.keepSelected = e.shiftKey;
       }
 
       designer.nodeMovementHandler.start(position);
-      FlowJS.Tools.BringToFront(designer._nodeContainer, node.element);      
+      FlowJS.Tools.BringToFront(designer._nodeContainer, node.element);
     });
   }
 

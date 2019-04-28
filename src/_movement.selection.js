@@ -8,6 +8,8 @@ class SelectionMovementHandler extends MovementHandler {
   }
 
   start(position) {
+    this.designer.callbacks.invokeNodeUnselected(this.designer.nodeMovementHandler.nodes);
+
     super.start(position);
 
     this.element = FlowJS.Tools.GenerateSVG('rect');
@@ -39,15 +41,13 @@ class SelectionMovementHandler extends MovementHandler {
 
     if (position.dx == 0 && position.dy == 0) {
       this.designer.nodeMovementHandler.setSelection();
+    } else {
+      this.designer.callbacks.invokeNodeSelected(this.designer.nodeMovementHandler.nodes);
     }
 
     this.designer._svg.removeChild(this.element);
     this.element = undefined;
 
     this.designer.activeMovementHandler = this.designer.nodeMovementHandler;
-
-    if (this.designer.nodeMovementHandler.nodes.length > 0 && this.designer.callbacks.nodeSelected) {
-      this.designer.callbacks.nodeSelected(this.designer.nodeMovementHandler.nodes);
-    }
   }
 }

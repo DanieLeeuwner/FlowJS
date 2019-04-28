@@ -1,10 +1,10 @@
 var controls = controls || [];
 
 controls.push({
-  title: 'alert',
+  name: 'alert',
   node: {
-    title: 'alert',
-    subtitle: 'display alert box',
+    name: 'alert',
+    description: 'display alert box',
     type: 'code',
     inputs: [
       {
@@ -19,10 +19,10 @@ controls.push({
 });
 
 controls.push({
-  title: 'prompt',
+  name: 'prompt',
   node: {
-    title: 'prompt',
-    subtitle: 'prompt input value',
+    name: 'prompt',
+    description: 'prompt input value',
     type: 'code',
     inputs: [
       {
@@ -43,10 +43,10 @@ controls.push({
 });
 
 controls.push({
-  title: 'code',
+  name: 'code',
   node: {
-    title: 'code',
-    subtitle: 'configured code',
+    name: 'code',
+    description: 'configured code',
     type: 'code',
     inputs: [
       {
@@ -67,7 +67,7 @@ controls.push({
 });
 
 controls.push({
-  title: 'FLOW',
+  name: 'FLOW',
   node: {
     name: 'FLOW',
     description: '',
@@ -81,7 +81,7 @@ controls.push({
 });
 
 controls.push({
-  title: 'BASED',
+  name: 'BASED',
   node: {
     name: 'BASED',
     description: '',
@@ -95,7 +95,7 @@ controls.push({
 });
 
 controls.push({
-  title: 'PROGRAMMING',
+  name: 'PROGRAMMING',
   node: {
     name: 'PROGRAMMING',
     description: '',
@@ -109,7 +109,7 @@ controls.push({
 });
 
 controls.push({
-  title: 'FlowJS',
+  name: 'FlowJS',
   node: {
     name: 'FlowJS',
     description: '',
@@ -123,7 +123,7 @@ controls.push({
 });
 
 controls.push({
-  title: 'Title goes here',
+  name: 'name goes here',
   node: {
     name: 'Name here',
     description: 'Description here',

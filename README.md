@@ -105,8 +105,6 @@ Node objects contain the following properties:
 | `x`           | X coordinate of the node. Default 0. |
 | `y`           | Y coordinate of the node. Default 0. |
 
-The designer automatically adds its scroll position values to the provided `x` and `y` values before creating the node.
-
 Example of creating a node with two inputs and two outputs:
 
 ```js
@@ -117,7 +115,6 @@ var newNode = {
     outputs: [ 'Out 1', 'Out 2' ],
     data: { }
 }
-
 designer.createNode(newNode);
 ```
 
@@ -140,7 +137,7 @@ All callback events should be functions that expect the specified parameter.
 | `nodeSelected`   | Node[]    | Node is selected.                  |
 | `nodeUnselected` | Node[]    | Node is unselected.                |
 | `nodeDeleted`    | Node[]    | Node is deleted.                   |
-| `nodeOpened`     | Node[]    | A selected node is clicked.        |
+| `nodeOpened`     | Node      | A selected node is clicked.        |
 | `nodeMoved`      | Node[]    | Node is moved.                     |
 
 ### Validation
@@ -149,7 +146,15 @@ Validation actions
 
 ### Controls
 
-asdf
+| Control | Action |
+| ------- | ------ |
+| <kbd>Del</kbd> | Delete currently selected nodes or link. |
+| <kbd>Esc</kbd> | Unselect currently selected nodes. |
+| Mouse Wheel | Scroll vertically (default implementation). |
+| <kbd>Shift</kbd> + Mouse wheel | Scroll horizontally (default implementation). |
+| <kbd>Ctrl</kbd> + Mouse wheel | Change designer zoom level. |
+| <kbd>Ctrl</kbd> + Left mouse button | Move designer viewport. |
+| <kbd>Shift</kbd> + Left mouse button | Select multiple nodes. |
 
 ### Export
 
@@ -163,7 +168,12 @@ asdf
 
 | Item                | Description                                                  |
 | ------------------- | ------------------------------------------------------------ |
-| Dynamic node height | Change the height of nodes to automatically fit longer descriptions |
-| Connector popup     | Display a popup next to connectors showing the name          |
-|                     |                                                              |
+| Dynamic node height | Change the height of nodes to automatically fit longer descriptions. |
+| Connector popup     | Display a popup next to connectors showing the name, this will replace the current connector text. |
+| Node icon           | Add icon to node.                                            |
+| Node image          | Add an image to node, this will display below the description. |
+| Minimap             | Display minimap of nodes, links, and current scroll position. |
+| Designer info       | Display info about designer (x, y, scale, total nodes, etc.). |
+| Mobile support      | Support for multi-touch gestures.                            |
+| Node unselect       | Node unselect when using <kbd>Shift</kbd> + Left mouse button on selected node. |
 

@@ -42,7 +42,7 @@ class Link {
     FlowJS.Tools.BringToFront(this.designer._linkContainer, this.element);
     FlowJS.Tools.BringToFront(this.designer._linkContainer, this.overlay);
 
-    this.element.style.stroke = this.designer.theme.Focus;    
+    this.element.style.stroke = this.designer.theme.Focus;
     this.sourceConnector.focus();
     this.targetConnector.focus();
   }
@@ -78,7 +78,7 @@ class Link {
         data = FlowJS.PathTools.GetDataDirect(type, sourcePosition, targetPosition);
         break;
       case FlowJS.LinkStyle.Spline:
-        data = FlowJS.PathTools.GetDataSpline(type, sourcePosition, targetPosition);      
+        data = FlowJS.PathTools.GetDataSpline(type, sourcePosition, targetPosition);
         break;
     }
 
@@ -107,7 +107,7 @@ class Link {
       this.shadowElement.style.stroke = FlowJS.Config.Link.Shadow.Color || this.stroke;
       this.shadowElement.style.fill = 'none';
       this.shadowElement.style.strokeOpacity = shadowOpacity;
-      this.shadowElement.style.strokeWidth = shadowThickness; 
+      this.shadowElement.style.strokeWidth = shadowThickness;
     }
   }
 
@@ -123,7 +123,7 @@ class Link {
   }
 
   _renderOverlay() {
-    var thickness = FlowJS.Config.Link.Thickness;    
+    var thickness = FlowJS.Config.Link.Thickness;
     var shadowThickness = FlowJS.Config.Link.Shadow.Thickness;
 
     this.overlay = FlowJS.Tools.GenerateSVG('path');
@@ -147,7 +147,7 @@ class Link {
 
       link.focus();
 
-      link.designer.linkMovementHandler.currentLink = link;      
+      link.designer.linkMovementHandler.currentLink = link;
     });
 
     this.overlay.addEventListener('mouseout', (e) => {
@@ -182,6 +182,6 @@ class Link {
 
     this.designer._linkContainer.removeChild(this.element);
 
-    this.designer._linkContainer.removeChild(this.overlay);    
+    this.designer._linkContainer.removeChild(this.overlay);
   }
 }

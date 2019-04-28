@@ -14,6 +14,7 @@ class NodeInputHandler extends InputHandler {
         this.designer.deleteSelectedNodes();
         break;
       case 27:
+        this.designer.callbacks.invokeNodeUnselected(this.designer.nodeMovementHandler.nodes);
         this.designer.nodeMovementHandler.setSelection();
         break;
     }

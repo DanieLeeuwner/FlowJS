@@ -1,7 +1,5 @@
 var FlowJS = FlowJS || {};
 
-FlowJS
-
 FlowJS.Tools = {
   GenerateId: (length) => {
     var pattern = new Array(length + 1).join('x');

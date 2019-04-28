@@ -15,7 +15,7 @@ class NodeMovementHandler extends MovementHandler {
 
     for (var i = 0; i < this.designer.nodes.length; i++) {
       var node = this.designer.nodes[i];
-      
+
       if (node.inRectangle(xi, yi, xf, yf)) {
         nodes.push(node);
       }
@@ -58,7 +58,7 @@ class NodeMovementHandler extends MovementHandler {
       if (x < 0) x = 0;
       if (y < 0) y = 0;
 
-      if (x + node.width > this.designer.width) x = this.designer.width - node.width;    
+      if (x + node.width > this.designer.width) x = this.designer.width - node.width;
       if (y + node.height > this.designer.height) y = this.designer.height - node.height;
 
       node.x = x;
@@ -66,24 +66,21 @@ class NodeMovementHandler extends MovementHandler {
       node.refreshPosition();
     }
 
-    this.designer.refreshNodeLinks(this.nodes);  
+    this.designer.refreshNodeLinks(this.nodes);
   }
 
   stop(position) {
     super.stop(position);
 
-    var designer = position.designer;
-
-    if (position.dx == 0 && position.dy == 0 && this.keepSelected == false) {
-      // select node
-
-      this.setSelection([ this.activeNode ]);
-
-      if (designer.callbacks.nodeOpened) {
-        designer.callbacks.nodeOpened(this.activeNode);
-      }        
-      
+    if (position.dx == 0 && position.dy == 0) {
+      if (this.keepSelected == false) {
+        this.setSelection([ this.activeNode ]);
+        this.designer.callbacks.invokeNodeSelected([ this.activeNode ]);
+      } else {
+        this.designer.callbacks.invokeNodeOpened(this.activeNode);
+      }
     } else {
+      this.designer.callbacks.invokeNodeMoved(this.nodes);
       for (var i = 0; i < this.nodes.length; i++) {
         var node = this.nodes[i];
 
@@ -103,17 +100,9 @@ class NodeMovementHandler extends MovementHandler {
     }
 
     this.activeNode = undefined;
-
-    if (this.nodes.length > 0 && this.designer.callbacks.nodeSelected) {
-      this.designer.callbacks.nodeSelected(this.nodes);
-    }
   }
 
   reset() {
-    if (this.designer.nodeMovementHandler.nodes.length > 0 && this.designer.callbacks.nodeUnselected) {
-      this.designer.callbacks.nodeUnselected(this.designer.nodeMovementHandler.nodes);
-    }
-    
-    this.designer.nodeMovementHandler.setSelection();
+    this.setSelection();
   }
 }

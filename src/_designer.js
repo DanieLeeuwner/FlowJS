@@ -31,8 +31,9 @@ class Designer {
 
     this.callbacks = {
       linkCreated: undefined,
-      linkDeleted: undefined,
       linkSelected: undefined,
+      linkUnselected: undefined,
+      linkDeleted: undefined,
       nodeSelected: undefined,
       nodeUnselected: undefined,
       nodeOpened: undefined,
@@ -42,14 +43,18 @@ class Designer {
 
     if (data.callbacks) {
       this.callbacks.linkCreated = data.callbacks.linkCreated || undefined;
-      this.callbacks.linkDeleted = data.callbacks.linkDeleted || undefined;
       this.callbacks.linkSelected = data.callbacks.linkSelected || undefined;
+      this.callbacks.linkUnselected = data.callbacks.linkUnselected || undefined;
+      this.callbacks.linkDeleted = data.callbacks.linkDeleted || undefined;
       this.callbacks.nodeSelected = data.callbacks.nodeSelected || undefined;
       this.callbacks.nodeUnselected = data.callbacks.nodeUnselected || undefined;
-      this.callbacks.nodeOpened = data.callbacks.nodeOpened || undefined;
       this.callbacks.nodeDeleted = data.callbacks.nodeDeleted || undefined;
+      this.callbacks.nodeOpened = data.callbacks.nodeOpened || undefined;
       this.callbacks.nodeMoved = data.callbacks.nodeMoved || undefined;
     }
+
+    // register callback event handlers
+    this._registerCallbackHandlers();
 
     this.validation = {
       linkCreate: undefined,
@@ -410,6 +415,8 @@ class Designer {
       }
     }
 
+    this.callbacks.invokeNodeDeleted(deleteNodes);
+
     for (var i = 0; i < deleteNodes.length; i++) {
       var node = deleteNodes[i];
       var index = this.nodes.indexOf(node);
@@ -456,9 +463,7 @@ class Designer {
     link.render();
     link.refresh();
 
-    if (this.callbacks.linkCreated) {
-      this.callbacks.linkCreated(link);
-    }
+    this.callbacks.invokeLinkCreated(link);
   }
 
   deleteLink(link) {
@@ -470,9 +475,71 @@ class Designer {
 
     this.links.splice(index, 1);
 
-    if (this.callbacks.linkDeleted) {
-      this.callbacks.linkDeleted(link);
-    }
+    this.callbacks.invokeLinkDeleted(link);
   }
 
+  _registerCallbackHandlers() {
+    this.callbacks.invokeLinkCreated = (link) => {
+      if (!this.callbacks.linkCreated) return;
+      if (!link) return;
+
+      this.callbacks.linkCreated(link);
+    };
+
+    this.callbacks.invokeLinkDeleted = (link) => {
+      if (!this.callbacks.linkDeleted) return;
+      if (!link) return;
+
+      this.callbacks.linkDeleted(link);
+    };
+
+    this.callbacks.invokeLinkSelected = (link) => {
+      if (!this.callbacks.linkSelected) return;
+      if (!link) return;
+
+      this.callbacks.linkSelected(link);
+    };
+
+    this.callbacks.invokeLinkUnselected = (link) => {
+      if (!this.callbacks.linkUnselected) return;
+      if (!link) return;
+
+      this.callbacks.linkUnselected(link);
+    };
+
+    this.callbacks.invokeNodeSelected = (nodes) => {
+      if (!this.callbacks.nodeSelected) return;
+      if (!nodes || nodes.length == 0) return;
+
+      this.callbacks.nodeSelected(nodes);
+    };
+
+    this.callbacks.invokeNodeUnselected = (nodes) => {
+      if (!this.callbacks.nodeUnselected) return;
+      if (!nodes || nodes.length == 0) return;
+
+      this.callbacks.nodeUnselected(nodes);
+    };
+
+    this.callbacks.invokeNodeOpened = (node) => {
+      if (!this.callbacks.nodeOpened) return;
+      if (!node) return;
+
+      this.callbacks.nodeOpened(node);
+    };
+
+    this.callbacks.invokeNodeDeleted = (nodes) => {
+      if (!this.callbacks.nodeDeleted) return;
+      if (!nodes || nodes.length == 0) return;
+
+      this.callbacks.nodeDeleted(nodes);
+    };
+
+    this.callbacks.invokeNodeMoved = (nodes) => {
+      if (!this.callbacks.nodeMoved) return;
+      if (!nodes || nodes.length == 0) return;
+
+      this.callbacks.nodeMoved(nodes);
+    };
+  }
 }

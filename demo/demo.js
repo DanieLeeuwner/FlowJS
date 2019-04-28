@@ -6,16 +6,16 @@ var demoDesigner = new Designer({
   scale: 1,
   theme: FlowJS.Theme.Dark,
   callbacks: {
-    //nodeUnselected: (e) => { nodeUnselected(e); },
     //nodeOpened: (e) => { nodeSelected(e); },
-    linkCreated: (e) => { console.log(e); },
-    linkDeleted: (e) => { console.log(e); },
-    linkSelected: (e) => { console.log(e); },
-    nodeSelected: (e) => { console.log(e); },
-    nodeUnselected: (e) => { console.log(e); },
-    nodeOpened: (e) => { console.log(e); },
-    nodeDeleted: (e) => { console.log(e); },
-    nodeMoved: (e) => { console.log(e); }
+    linkCreated: (e) => { console.log('linkCreated'); console.log(e); },
+    linkSelected: (e) => { console.log('linkSelected'); console.log(e); },
+    linkUnselected: (e) => { console.log('linkUnselected'); console.log(e); },
+    linkDeleted: (e) => { console.log('linkDeleted'); console.log(e); },
+    nodeSelected: (e) => { console.log('nodeSelected'); console.log(e); },
+    nodeUnselected: (e) => { console.log('nodeUnselected'); console.log(e); },
+    nodeMoved: (e) => { console.log('nodeMoved'); console.log(e); },
+    nodeOpened: (e) => { console.log('nodeOpened'); console.log(e); },
+    nodeDeleted: (e) => { console.log('nodeDeleted'); console.log(e); },
   },
 });
 
@@ -66,8 +66,9 @@ function registerEvents() {
     x /= demoDesigner.scale;
     y /= demoDesigner.scale;
 
-    var node = JSON.parse(JSON.stringify(control));
+    var node = JSON.parse(JSON.stringify(control.node));
     node.data = {};
+    node.configParameters = node.configParameters || [];
     for (var config of node.configParameters) {
       node.data[config] = 'value';
     }
