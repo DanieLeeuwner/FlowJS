@@ -6,7 +6,6 @@ var demoDesigner = new Designer({
   scale: 1,
   theme: FlowJS.Theme.Dark,
   callbacks: {
-    //nodeOpened: (e) => { nodeSelected(e); },
     linkCreated: (e) => { console.log('linkCreated'); console.log(e); },
     linkSelected: (e) => { console.log('linkSelected'); console.log(e); },
     linkUnselected: (e) => { console.log('linkUnselected'); console.log(e); },
@@ -14,7 +13,7 @@ var demoDesigner = new Designer({
     nodeSelected: (e) => { console.log('nodeSelected'); console.log(e); },
     nodeUnselected: (e) => { console.log('nodeUnselected'); console.log(e); },
     nodeMoved: (e) => { console.log('nodeMoved'); console.log(e); },
-    nodeOpened: (e) => { console.log('nodeOpened'); console.log(e); },
+    nodeOpened: (e) => { console.log('nodeOpened'); console.log(e); nodeSelected(e); },
     nodeDeleted: (e) => { console.log('nodeDeleted'); console.log(e); },
   },
 });

@@ -124,7 +124,7 @@ designer.createNode(newNode);
 
 ### Callbacks
 
-Callbacks can be specified as part of the designer initialization process. These callbacks allow rules to be applied to the process. See [Configuration](#configuration).
+Callbacks can be specified as part of the designer initialization process. These callbacks allow other actions to be executed when specific designer events occur. See [Configuration](#configuration).
 
 All callback events should be functions that expect the specified parameter. 
 
@@ -142,7 +142,15 @@ All callback events should be functions that expect the specified parameter.
 
 ### Validation
 
-Validation actions 
+Validation events can be specified as part of the designer initialization process. These validation events allow rules to be applied to the process. See [Configuration](#configuration).
+
+All validation events should be functions that expect the specified parameter and return a boolean result. 
+
+| Validation   | Parameter            | Description           |
+| ------------ | -------------------- | --------------------- |
+| `linkCreate` | Connector, Connector | Link creation request |
+| `linkDelete` | Link                 | Link delete request   |
+| `nodeDelete` | Node[]               | Node delete request   |
 
 ### Controls
 
@@ -150,7 +158,7 @@ Validation actions
 | ------- | ------ |
 | <kbd>Del</kbd> | Delete currently selected nodes or link. |
 | <kbd>Esc</kbd> | Unselect currently selected nodes. |
-| Mouse Wheel | Scroll vertically (default implementation). |
+| Mouse wheel | Scroll vertically (default implementation). |
 | <kbd>Shift</kbd> + Mouse wheel | Scroll horizontally (default implementation). |
 | <kbd>Ctrl</kbd> + Mouse wheel | Change designer zoom level. |
 | <kbd>Ctrl</kbd> + Left mouse button | Move designer viewport. |

@@ -48,12 +48,14 @@ class ConnectorMovementHandler extends MovementHandler {
       var target = this.initialConnector.type == FlowJS.ConnectorType.Input ? this.initialConnector : this.finalConnector;
 
       if (source.node != target.node && source.type != target.type) {
-        this.designer.createLink(source.getId(), target.getId(), {
-          designer: this.designer,
-          stroke: this.link.stroke,
-          sourceConnector: source,
-          targetConnector: target,
-        });
+        if (this.designer.validation.invokeLinkCreate(source, target)) {
+          this.designer.createLink(source.getId(), target.getId(), {
+            designer: this.designer,
+            stroke: this.link.stroke,
+            sourceConnector: source,
+            targetConnector: target,
+          });
+        }
       }
     }
 

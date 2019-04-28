@@ -734,12 +734,14 @@ class ConnectorMovementHandler extends MovementHandler {
       var target = this.initialConnector.type == FlowJS.ConnectorType.Input ? this.initialConnector : this.finalConnector;
 
       if (source.node != target.node && source.type != target.type) {
-        this.designer.createLink(source.getId(), target.getId(), {
-          designer: this.designer,
-          stroke: this.link.stroke,
-          sourceConnector: source,
-          targetConnector: target,
-        });
+        if (this.designer.validation.invokeLinkCreate(source, target)) {
+          this.designer.createLink(source.getId(), target.getId(), {
+            designer: this.designer,
+            stroke: this.link.stroke,
+            sourceConnector: source,
+            targetConnector: target,
+          });
+        }
       }
     }
 
@@ -988,6 +990,9 @@ class Designer {
       this.validation.linkDelete = data.validation.linkDelete || undefined;
       this.validation.nodeDelete = data.validation.nodeDelete || undefined;
     }
+
+    // register validation event handlers
+    this._registerValidationHandlers();
 
     this._g = undefined;
     this._svg = undefined;
@@ -1336,7 +1341,9 @@ class Designer {
       }
     }
 
-    this.callbacks.invokeNodeDeleted(deleteNodes);
+    if (this.validation.invokeNodeDelete(deleteNodes) == false) {
+      return;
+    }
 
     for (var i = 0; i < deleteNodes.length; i++) {
       var node = deleteNodes[i];
@@ -1345,6 +1352,8 @@ class Designer {
       this.nodes.splice(index, 1);
       node.destroy();
     }
+
+    this.callbacks.invokeNodeDeleted(deleteNodes);
 
     var deleteLinks = [];
 
@@ -1391,12 +1400,14 @@ class Designer {
     var index = this.links.indexOf(link);
     if (index == -1) return;
 
-    this.linkMovementHandler.unfocus();
-    link.destroy();
+    if (this.validation.invokeLinkDelete(link)) {
+      this.linkMovementHandler.unfocus();
+      link.destroy();
 
-    this.links.splice(index, 1);
+      this.links.splice(index, 1);
 
-    this.callbacks.invokeLinkDeleted(link);
+      this.callbacks.invokeLinkDeleted(link);
+    }
   }
 
   _registerCallbackHandlers() {
@@ -1462,6 +1473,31 @@ class Designer {
 
       this.callbacks.nodeMoved(nodes);
     };
+  }
+
+  _registerValidationHandlers() {
+    this.validation.invokeLinkCreate = (source, target) => {
+      if (!this.validation.linkCreate) return true;
+      if (!link) return true;
+
+      return this.validation.linkCreate(source, target);
+    };
+
+    this.validation.invokeLinkDelete = (link) => {
+      if (!this.validation.linkDelete) return true;
+      if (!link) return true;
+
+      return this.validation.linkDelete(link);
+    };
+
+    this.validation.invokeNodeDelete = (nodes) => {
+      if (!this.validation.nodeDelete) return true;
+      if (!link) return true;
+
+      return this.validation.nodeDelete(nodes);
+    };
+
+
   }
 }
 
