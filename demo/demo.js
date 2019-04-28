@@ -14,8 +14,13 @@ var demoDesigner = new Designer({
     nodeUnselected: (e) => { console.log('nodeUnselected'); console.log(e); },
     nodeMoved: (e) => { console.log('nodeMoved'); console.log(e); },
     nodeOpened: (e) => { console.log('nodeOpened'); console.log(e); nodeSelected(e); },
-    nodeDeleted: (e) => { console.log('nodeDeleted'); console.log(e); },
+    nodeDeleted: (e) => { console.log('nodeDeleted'); console.log(e); }
   },
+  validation: {
+    linkCreate: (source, target) => { console.log('linkCreate validation'); console.log(source); console.log(target); return true; },
+    linkDelete: (link) => { console.log('linkDelete validation'); console.log(link); return true; },
+    nodeDelete: (nodes) => { console.log('nodeDelete validation'); console.log(nodes); return true; }
+  }
 });
 
 registerEvents();

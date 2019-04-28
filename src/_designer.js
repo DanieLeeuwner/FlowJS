@@ -555,22 +555,16 @@ class Designer {
   _registerValidationHandlers() {
     this.validation.invokeLinkCreate = (source, target) => {
       if (!this.validation.linkCreate) return true;
-      if (!link) return true;
-
       return this.validation.linkCreate(source, target);
     };
 
     this.validation.invokeLinkDelete = (link) => {
       if (!this.validation.linkDelete) return true;
-      if (!link) return true;
-
       return this.validation.linkDelete(link);
     };
 
     this.validation.invokeNodeDelete = (nodes) => {
       if (!this.validation.nodeDelete) return true;
-      if (!link) return true;
-
       return this.validation.nodeDelete(nodes);
     };
   }
