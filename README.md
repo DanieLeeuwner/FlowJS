@@ -2,7 +2,7 @@
 
 FlowJS is a visual designer to create and manipulate nodes and links between them.
 
-![flow_based_programming](docs\images\flow_based_programming.png)
+![flow_based_programming](docs/images/flow_based_programming.png)
 
 ### Table of contents
 
@@ -120,7 +120,7 @@ designer.createNode(newNode);
 
 
 
-![flow_based_programming](docs\images\basic_node.png)
+![flow_based_programming](docs/images/basic_node.png)
 
 ### Callbacks
 
