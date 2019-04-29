@@ -20,6 +20,10 @@ FlowJS is a visual designer to create and manipulate nodes and links between the
 
 FlowJS functionality is split into several files located in `./src`. These files have been combined into `./dist/flow.js` by using the configuration specified in `filepack.config.json`  (filepack on [NPM](https://www.npmjs.com/package/filepack) and [GitHub](https://github.com/DanieLeeuwner/filepack)).
 
+```bash
+$ filepack
+```
+
 ### Designer
 
 FlowJS defines a Designer class. Minimal initialization requires an HTML element to populate with the visual designer.
@@ -170,7 +174,7 @@ An export is created by calling `designer.export()`. This returns an object cont
 
 Example of export JSON:
 
-```json
+```js
 {
     "nodes": [
         // array of node objects
