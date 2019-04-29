@@ -1,8 +1,9 @@
 var controls = controls || [];
 var tempElement;
 
-var demoDesigner = new Designer({
+var designer = new Designer({
   container: container,
+  import: JSON.parse(localStorage.getItem('import')),
   scale: 1,
   theme: FlowJS.Theme.Dark,
   callbacks: {
@@ -51,7 +52,7 @@ function registerEvents() {
     }
 
     hideCode();
-    demoDesigner.nodeMovementHandler.setSelection();
+    designer.nodeMovementHandler.setSelection();
   });
 
   document.addEventListener('mouseup', (e) => {
@@ -67,8 +68,8 @@ function registerEvents() {
     x -= tempElement.initialX;
     y -= tempElement.initialY;
 
-    x /= demoDesigner.scale;
-    y /= demoDesigner.scale;
+    x /= designer.scale;
+    y /= designer.scale;
 
     var node = JSON.parse(JSON.stringify(control.node));
     node.data = {};
@@ -80,7 +81,7 @@ function registerEvents() {
     node.x = x;
     node.y = y;
 
-    demoDesigner.createNode(node);
+    designer.createNode(node);
 
     tempElement = undefined;
   });
@@ -180,7 +181,7 @@ var demoData;
 function run() {
   eventListeners = {};
 
-  demoData = demoDesigner.export();
+  demoData = designer.export();
 
   for (var i = 0; i < demoData.nodes.length; i++) {
     var node = demoData.nodes[i];

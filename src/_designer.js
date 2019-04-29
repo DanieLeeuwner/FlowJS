@@ -79,7 +79,7 @@ class Designer {
 
     this.updateTheme();
 
-    this.importData(data.import);
+    this.import(data.import);
 
     this.initializeContainer();
   }
@@ -94,10 +94,11 @@ class Designer {
     //this.linkColor = this.theme.Link;
   }
 
-  importData(data) {
-    if (data == undefined) return;
+  import(data) {
+    if (!data) return;
 
-    console.log('importing');
+    data.nodes = data.nodes || [];
+    data.links = data.links || [];
 
     this.nodes = [];
     this.links = [];

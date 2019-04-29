@@ -2,7 +2,7 @@
 
 FlowJS is a visual designer to create and manipulate nodes and links between them.
 
-![flow_based_programming](.\docs\images\flow_based_programming.png)
+![flow_based_programming](docs\images\flow_based_programming.png)
 
 ### Table of contents
 
@@ -34,7 +34,7 @@ Initialization in JavaScript:
 
 ```js
 var designer = new Designer({
-  container: container
+    container: container
 });
 ```
 
@@ -57,8 +57,8 @@ Example of initializing the designer with the default dark theme:
 
 ```js
 var designer = new Designer({
-  container: container,
-  theme: FlowJS.Theme.Dark
+    container: container,
+    theme: FlowJS.Theme.Dark
 });
 ```
 
@@ -120,7 +120,7 @@ designer.createNode(newNode);
 
 
 
-![flow_based_programming](.\docs\images\basic_node.png)
+![flow_based_programming](docs\images\basic_node.png)
 
 ### Callbacks
 
@@ -166,22 +166,93 @@ All validation events should be functions that expect the specified parameter an
 
 ### Export
 
-asdf
+An export is created by calling `designer.export()`. This returns an object containing the nodes and links between them.
+
+Example of export JSON:
+
+```json
+{
+    "nodes": [
+        // array of node objects
+    ],
+    "links": [
+        // array of link objects
+    ]
+}
+```
+
+Node properties:
+
+| Property          | Description                                                  |
+| ----------------- | ------------------------------------------------------------ |
+| `id`              | Node identifier. 8 characters.                               |
+| `x`               | X position.                                                  |
+| `y`               | Y position                                                   |
+| `type`            | Type provided during node initialization.                    |
+| `name`            | Name text.                                                   |
+| `description`     | Description text.                                            |
+| `data`            | Node data.                                                   |
+| `backgroundColor` | Background color provided during node initialization.        |
+| `foregroundColor` | Foreground color provided during node initialization.        |
+| `borderColor`     | Border color provided during node initialization.            |
+| `inputs`          | Input connection points. See Input/Output properties below.  |
+| `outputs`         | Output connection points. See Input/Output properties below. |
+
+Input/Output properties:
+
+| Property | Description                               |
+| -------- | ----------------------------------------- |
+| `id`     | Connector identifier. 4 characters.       |
+| `name`   | Name provided during node initialization. |
+
+Link properties:
+
+| Property | Description                                            |
+| -------- | ------------------------------------------------------ |
+| `source` | Source node and connector. '{node.id}.{connector.id}'. |
+| `target` | Target node and connector. '{node.id}.{connector.id}'. |
+| `stroke` | Stroke color assigned to link during creation.         |
 
 ### Import
 
-asdf
+Import requires an object in the exact JSON format provided by the export function. Import can be done during the designer initialization, or after the designer has been initialized. Import after initialization requires the designer to be refreshed.
+
+Example of import during initialization:
+
+```js
+var importData = { 
+    nodes: [
+      // array of node objects
+    ],
+    links: [
+      // array of link objects
+    ]
+}
+
+var designer = new Designer({
+    container: container,
+    import: import
+});
+```
+
+Example of import after initialization:
+
+```js
+designer.import(import);
+designer.refresh();
+```
 
 ### Roadmap
 
 | Item                | Description                                                  |
 | ------------------- | ------------------------------------------------------------ |
-| Dynamic node height | Change the height of nodes to automatically fit longer descriptions. |
-| Connector popup     | Display a popup next to connectors showing the name, this will replace the current connector text. |
+| Dynamic node height | Change the height of nodes to automatically fit longer titles and descriptions. |
+| Connector popup     | Display a popup next to connectors showing the name, this will replace the current connector text which is displayed inside the node. |
 | Node icon           | Add icon to node.                                            |
 | Node image          | Add an image to node, this will display below the description. |
 | Minimap             | Display minimap of nodes, links, and current scroll position. |
 | Designer info       | Display info about designer (x, y, scale, total nodes, etc.). |
 | Mobile support      | Support for multi-touch gestures.                            |
 | Node unselect       | Node unselect when using <kbd>Shift</kbd> + Left mouse button on selected node. |
+| History             | Support for undo and redo actions.                           |
 

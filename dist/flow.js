@@ -1,6 +1,6 @@
 /*
 Created by filepack
-Date: Sunday, April 28, 2019
+Date: Monday, April 29, 2019
 */
 
 /*
@@ -1002,7 +1002,7 @@ class Designer {
 
     this.updateTheme();
 
-    this.importData(data.import);
+    this.import(data.import);
 
     this.initializeContainer();
   }
@@ -1017,10 +1017,11 @@ class Designer {
     //this.linkColor = this.theme.Link;
   }
 
-  importData(data) {
-    if (data == undefined) return;
+  import(data) {
+    if (!data) return;
 
-    console.log('importing');
+    data.nodes = data.nodes || [];
+    data.links = data.links || [];
 
     this.nodes = [];
     this.links = [];
@@ -1478,26 +1479,18 @@ class Designer {
   _registerValidationHandlers() {
     this.validation.invokeLinkCreate = (source, target) => {
       if (!this.validation.linkCreate) return true;
-      if (!link) return true;
-
       return this.validation.linkCreate(source, target);
     };
 
     this.validation.invokeLinkDelete = (link) => {
       if (!this.validation.linkDelete) return true;
-      if (!link) return true;
-
       return this.validation.linkDelete(link);
     };
 
     this.validation.invokeNodeDelete = (nodes) => {
       if (!this.validation.nodeDelete) return true;
-      if (!link) return true;
-
       return this.validation.nodeDelete(nodes);
     };
-
-
   }
 }
 
