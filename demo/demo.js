@@ -3,7 +3,7 @@ var tempElement;
 
 var designer = new Designer({
   container: container,
-  import: JSON.parse(localStorage.getItem('import')),
+  //import: JSON.parse(localStorage.getItem('import')),
   scale: 1,
   theme: FlowJS.Theme.Dark,
   callbacks: {
@@ -32,8 +32,9 @@ function registerEvents() {
   codeArea.addEventListener('keydown', inputKeyDown);
 
   popup.addEventListener('mousedown', (e) => {
+    e.stopPropagation();
+
     if (e.target == codeArea) {
-      e.stopPropagation();
       return;
     }
 
@@ -41,18 +42,9 @@ function registerEvents() {
       case 'code':
         currentNode.data.code = codeArea.value;
         break;
-
-      case 'event':
-        try {
-          currentNode.data = JSON.parse(codeArea.value);
-        } catch(e) {
-          return;
-        }
-        break;
     }
 
     hideCode();
-    designer.nodeMovementHandler.setSelection();
   });
 
   document.addEventListener('mouseup', (e) => {
@@ -62,8 +54,8 @@ function registerEvents() {
 
     container.removeChild(tempElement);
 
-    var x = e.layerX - 200;
-    var y = e.layerY;
+    var x = e.pageX - 200;
+    var y = e.pageY;
 
     x -= tempElement.initialX;
     y -= tempElement.initialY;
@@ -146,8 +138,11 @@ function nodeUnselected(nodes) {
 }
 
 function nodeSelected(node) {
-  currentNode = node;
-  showCode(JSON.stringify(currentNode.data, null, 2));
+  currentNode = undefined;
+  if (node.type === 'code') {
+    currentNode = node;
+    showCode(currentNode.data.code || '// place code here');
+  }
 }
 
 function setCode(value) {
@@ -168,9 +163,15 @@ function hideCode() {
 function inputKeyDown(e) {
   if (currentNode == undefined) return;
 
-  if (e.keyCode == 9) {
-    e.preventDefault();
-    codeArea.insertAtCaret('  ');
+  switch (e.keyCode) {
+    case 9: // tab
+      e.preventDefault();
+      codeArea.insertAtCaret('  ');
+      break;
+
+    case 27: // esc
+      hideCode();
+      break;
   }
 }
 

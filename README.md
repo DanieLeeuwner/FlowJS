@@ -259,4 +259,5 @@ designer.refresh();
 | Mobile support      | Support for multi-touch gestures.                            |
 | Node unselect       | Node unselect when using <kbd>Shift</kbd> + Left mouse button on selected node. |
 | History             | Support for undo and redo actions.                           |
-
+| Selection reference | Change selection rectangle coordinates to reference page rather than designer |
+| Demo                | Create a functional demo application                     |

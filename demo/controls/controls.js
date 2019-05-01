@@ -1,5 +1,20 @@
 var controls = [
   {
+    name: 'entry',
+    node: {
+      name: 'entry',
+      description: 'process entry',
+      type: 'entry',
+      outputs: [
+        {
+          name: 'OUT',
+        }
+      ],
+      data: {
+      }
+    }
+  },
+  {
     name: 'alert',
     node: {
       name: 'alert',
@@ -7,12 +22,14 @@ var controls = [
       type: 'code',
       inputs: [
         {
-          name: 'IN',
-          key: 'text'
+          name: 'IN'
         }
       ],
       data: {
-        code: `alert('hello world');`
+        code: `
+let message = msg.value;
+alert(message);
+`
       }
     }
   },
@@ -24,18 +41,26 @@ var controls = [
       type: 'code',
       inputs: [
         {
-          name: 'IN',
-          key: 'text'
+          name: 'IN'
         }
       ],
       outputs: [
         {
-          name: 'OUT',
-          key: 'value'
+          name: 'OUT'
         }
       ],
       data: {
-        code: `output.value = prompt(input.text);\nthis.next();`
+        code: `
+// read values from payload
+let text = msg.text;
+let value = msg.value;
+
+// show input prompt
+msg.value = prompt(text, value);
+
+// emit payload
+next('OUT');
+`
       }
     }
   },
@@ -47,18 +72,19 @@ var controls = [
       type: 'code',
       inputs: [
         {
-          name: 'IN',
-          key: 'value'
+          name: 'IN'
         }
       ],
       outputs: [
         {
-          name: 'OUT',
-          key: 'value'
+          name: 'OUT'
         }
       ],
       data: {
-        code: `console.log(input.value);\nconsole.log(output.value);\nthis.next();`
+        code: `
+console.log(msg);
+next('OUT');
+`
       }
     }
   }
