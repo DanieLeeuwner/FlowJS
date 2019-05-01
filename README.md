@@ -20,6 +20,8 @@ FlowJS is a visual designer to create and manipulate nodes and links between the
 
 FlowJS functionality is split into several files located in `./src`. These files have been combined into `./dist/flow.js` by using the configuration specified in `filepack.config.json`  (filepack on [NPM](https://www.npmjs.com/package/filepack) and [GitHub](https://github.com/DanieLeeuwner/filepack)).
 
+Using filepack from the base directory:
+
 ```bash
 $ filepack
 ```
@@ -160,8 +162,8 @@ All validation events should be functions that expect the specified parameter an
 
 | Control | Action |
 | ------- | ------ |
-| <kbd>Del</kbd> | Delete currently selected nodes or link. |
-| <kbd>Esc</kbd> | Unselect currently selected nodes. |
+| <kbd>Del</kbd> | Delete currently selected nodes or links. |
+| <kbd>Esc</kbd> | Unselect currently selected nodes or links. |
 | Mouse wheel | Scroll vertically (default implementation). |
 | <kbd>Shift</kbd> + Mouse wheel | Scroll horizontally (default implementation). |
 | <kbd>Ctrl</kbd> + Mouse wheel | Change designer zoom level. |
