@@ -1,6 +1,6 @@
 /*
 Created by filepack
-Date: Monday, April 29, 2019
+Date: Wednesday, May 1, 2019
 */
 
 /*
@@ -649,7 +649,10 @@ class NodeMovementHandler extends MovementHandler {
         this.setSelection([ this.activeNode ]);
         this.designer.callbacks.invokeNodeSelected([ this.activeNode ]);
       } else {
-        this.designer.callbacks.invokeNodeOpened(this.activeNode);
+        console.log(position.e);
+        if (position.e.shiftKey == false) {
+          this.designer.callbacks.invokeNodeOpened(this.activeNode);
+        }
       }
     } else {
       this.designer.callbacks.invokeNodeMoved(this.nodes);

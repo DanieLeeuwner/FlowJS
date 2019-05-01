@@ -77,7 +77,9 @@ class NodeMovementHandler extends MovementHandler {
         this.setSelection([ this.activeNode ]);
         this.designer.callbacks.invokeNodeSelected([ this.activeNode ]);
       } else {
-        this.designer.callbacks.invokeNodeOpened(this.activeNode);
+        if (position.e.shiftKey == false) {
+          this.designer.callbacks.invokeNodeOpened(this.activeNode);
+        }
       }
     } else {
       this.designer.callbacks.invokeNodeMoved(this.nodes);
