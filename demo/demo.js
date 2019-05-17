@@ -38,11 +38,7 @@ function registerEvents() {
       return;
     }
 
-    switch (currentNode.type) {
-      case 'code':
-        currentNode.data.code = codeArea.value;
-        break;
-    }
+    currentNode.data = JSON.parse(codeArea.value);
 
     hideCode();
   });
@@ -57,13 +53,15 @@ function registerEvents() {
     var x = e.pageX - 200;
     var y = e.pageY;
 
+    if (x < 0 || y < 0) return;
+
     x -= tempElement.initialX;
     y -= tempElement.initialY;
 
     x /= designer.scale;
     y /= designer.scale;
 
-    var node = JSON.parse(JSON.stringify(control.node));
+    var node = JSON.parse(JSON.stringify(control));
     node.data = {};
     node.configParameters = node.configParameters || [];
     for (var config of node.configParameters) {
@@ -93,6 +91,8 @@ function updateControls() {
   if (controls == undefined) return;
 
   controlsArea.innerHTML = '';
+
+  controls = _.orderBy(controls, ['Type'], ['asc']);
 
   for (var i = 0; i < controls.length; i++) {
     var control = controls[i];
@@ -138,11 +138,8 @@ function nodeUnselected(nodes) {
 }
 
 function nodeSelected(node) {
-  currentNode = undefined;
-  if (node.type === 'code') {
-    currentNode = node;
-    showCode(currentNode.data.code || '// place code here');
-  }
+  currentNode = node;
+  showCode(JSON.stringify(currentNode.data, null, 4));
 }
 
 function setCode(value) {
@@ -166,7 +163,7 @@ function inputKeyDown(e) {
   switch (e.keyCode) {
     case 9: // tab
       e.preventDefault();
-      codeArea.insertAtCaret('  ');
+      codeArea.insertAtCaret('    ');
       break;
 
     case 27: // esc

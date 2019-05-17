@@ -1,0 +1,98 @@
+{
+  "entryPoint": "47a43b6a.3dbb",
+  "configuration": {
+    "APPID": "1eb7a8eda4e392c1089a7fc50a987cd7",
+    "BaseUrl": "api.openweathermap.org/data/2.5/",
+    "Timeout": 30
+  },
+  "nodes": [
+    {
+      "id": "47a43b6a",
+      "name": "Value Prompt",
+      "inputs": [
+        {
+          "id": "3dbb",
+          "name": "Exectute"
+        }
+      ],
+      "configuration": {
+        "Heading": "City",
+        "Prompt": "Enter city to find weather data",
+        "InputType": "Text",
+        "WarningMessage": "Invalid city name entered",
+        "Title": "Weather by City",
+        "NextText": "Search"
+      },
+      "outputs": {
+        "OnNext": [
+          "be59fd23.4f8f"
+        ]
+      }
+    },
+    {
+      "id": "be59fd23",
+      "name": "Http Get",
+      "inputs": [
+        {
+          "id": "4f8f",
+          "name": "Execute"
+        }
+      ],
+      "configuration": {
+        "DisplayProgress": true,
+        "ProgressMessage": "Loading weather data",
+        "Parameters": {
+          "q": "{Value}",
+          "APPID": "{APPID}"
+        },
+        "Endpoint": "weather"
+      },
+      "outputs": {
+        "OnError": [
+          "accf9c96.3b2a"
+        ],
+        "OnSuccess": [
+          "b4a50559.9384"
+        ]
+      }
+    },
+    {
+      "id": "accf9c96",
+      "name": "DisplayMessage",
+      "inputs": [
+        {
+          "id": "3b2a",
+          "name": "Execute"
+        }
+      ],
+      "configuration": {
+        "Title": "Error",
+        "Message": "Could not load weather data"
+      },
+      "outputs": {
+        "OnCancel": [
+          "47a43b6a.3dbb"
+        ]
+      }
+    },
+    {
+      "id": "b4a50559",
+      "name": "Weather",
+      "inputs": [
+        {
+          "id": "9384",
+          "name": "Execute"
+        }
+      ],
+      "configuration": {
+        "Title": "Weather by City",
+        "BackText": "Back"
+      },
+      "outputs": {
+        "OnBack": [
+          "47a43b6a.3dbb"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,301 @@
+{
+    "nodes": [
+        {
+            "id": "b5319808",
+            "x": 20,
+            "y": 60,
+            "type": "Process",
+            "name": "Flow Start",
+            "description": "Start a flow",
+            "data": {
+                "Configuration": {
+                    "APPID": "1eb7a8eda4e392c1089a7fc50a987cd7",
+                    "BaseUrl": "api.openweathermap.org/data/2.5/",
+                    "Timeout": 30
+                }
+            },
+            "backgroundColor": "#2E8364",
+            "foregroundColor": "#000",
+            "borderColor": "#909090",
+            "inputs": [],
+            "outputs": [
+                {
+                    "id": "01ef",
+                    "name": "Output"
+                }
+            ]
+        },
+        {
+            "id": "f02b20c8",
+            "x": 320,
+            "y": 120,
+            "type": "View",
+            "name": "Value Prompt",
+            "description": "Prompt user input",
+            "data": {
+                "Heading": "City Name",
+                "Prompt": "Enter city name",
+                "InputType": "Text",
+                "Title": "City",
+                "BackText": "Back",
+                "NextText": "Next"
+            },
+            "backgroundColor": "#E18D96",
+            "foregroundColor": "#000",
+            "borderColor": "#909090",
+            "inputs": [
+                {
+                    "id": "1ff4",
+                    "name": "Exectute"
+                }
+            ],
+            "outputs": [
+                {
+                    "id": "4753",
+                    "name": "OnBack"
+                },
+                {
+                    "id": "1f42",
+                    "name": "OnNext"
+                }
+            ]
+        },
+        {
+            "id": "64fbfc05",
+            "x": 580,
+            "y": 200,
+            "type": "Process",
+            "name": "Http Get",
+            "description": "Http Get",
+            "data": {
+                "DisplayProgress": true,
+                "ProgressMessage": "Loading weather data",
+                "Parameters": {
+                    "q": "{Value}",
+                    "APPID": "{APPID}"
+                },
+                "BaseUrl": "{BaseUrl}",
+                "Timeout": "{Timeout}",
+                "Endpoint": "weather"
+            },
+            "backgroundColor": "#9DABDD",
+            "foregroundColor": "#000",
+            "borderColor": "#909090",
+            "inputs": [
+                {
+                    "id": "585a",
+                    "name": "Execute"
+                }
+            ],
+            "outputs": [
+                {
+                    "id": "2a0a",
+                    "name": "OnSuccess"
+                },
+                {
+                    "id": "25c4",
+                    "name": "OnError"
+                }
+            ]
+        },
+        {
+            "id": "591219a4",
+            "x": 880,
+            "y": 260,
+            "type": "Process",
+            "name": "Display Message",
+            "description": "Display message dialog",
+            "data": {
+                "Title": "HTTP Error",
+                "Message": "Failed to load weather data"
+            },
+            "backgroundColor": "#E18D96",
+            "foregroundColor": "#000",
+            "borderColor": "#909090",
+            "inputs": [
+                {
+                    "id": "e060",
+                    "name": "Execute"
+                }
+            ],
+            "outputs": [
+                {
+                    "id": "7bc7",
+                    "name": "OnAccept"
+                },
+                {
+                    "id": "a483",
+                    "name": "OnCancel"
+                }
+            ]
+        },
+        {
+            "id": "1d2d096f",
+            "x": 880,
+            "y": 200,
+            "type": "View",
+            "name": "Weather",
+            "description": "Display weather data",
+            "data": {
+                "Title": "Weather",
+                "BackText": "Back"
+            },
+            "backgroundColor": "#E08963",
+            "foregroundColor": "#000",
+            "borderColor": "#909090",
+            "inputs": [
+                {
+                    "id": "9874",
+                    "name": "Execute"
+                }
+            ],
+            "outputs": [
+                {
+                    "id": "522f",
+                    "name": "OnBack"
+                }
+            ]
+        },
+        {
+            "id": "382941e3",
+            "x": 20,
+            "y": 120,
+            "type": "Link",
+            "name": "Link Output",
+            "description": "Target for flow links",
+            "data": {
+                "Key": "value"
+            },
+            "backgroundColor": "#70AE98",
+            "foregroundColor": "#000",
+            "borderColor": "#909090",
+            "inputs": [],
+            "outputs": [
+                {
+                    "id": "b608",
+                    "name": "Output"
+                }
+            ]
+        },
+        {
+            "id": "806f08c9",
+            "x": 1180,
+            "y": 260,
+            "type": "Link",
+            "name": "Link Input",
+            "description": "Source for flow links",
+            "data": {
+                "Key": "value"
+            },
+            "backgroundColor": "#70AE98",
+            "foregroundColor": "#000",
+            "borderColor": "#909090",
+            "inputs": [
+                {
+                    "id": "0138",
+                    "name": "Input"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "id": "a20c83b7",
+            "x": 880,
+            "y": 40,
+            "type": "Process",
+            "name": "Flow Complete",
+            "description": "Complete a flow",
+            "data": {},
+            "backgroundColor": "#2E8364",
+            "foregroundColor": "#000",
+            "borderColor": "#909090",
+            "inputs": [
+                {
+                    "id": "aac4",
+                    "name": "Execute"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "id": "24558819",
+            "x": 580,
+            "y": 40,
+            "type": "Process",
+            "name": "Display Message",
+            "description": "Display message dialog",
+            "data": {
+                "Title": "Exit Confirmation",
+                "Message": "Exit process?",
+                "Cancel": "Cancel",
+                "Accept": "Exit"
+            },
+            "backgroundColor": "#E18D96",
+            "foregroundColor": "#000",
+            "borderColor": "#909090",
+            "inputs": [
+                {
+                    "id": "d17b",
+                    "name": "Execute"
+                }
+            ],
+            "outputs": [
+                {
+                    "id": "847b",
+                    "name": "OnAccept"
+                },
+                {
+                    "id": "5909",
+                    "name": "OnCancel"
+                }
+            ]
+        }
+    ],
+    "links": [
+        {
+            "source": "b5319808.01ef",
+            "target": "f02b20c8.1ff4",
+            "stroke": "#CCC"
+        },
+        {
+            "source": "f02b20c8.1f42",
+            "target": "64fbfc05.585a",
+            "stroke": "#CCC"
+        },
+        {
+            "source": "64fbfc05.25c4",
+            "target": "591219a4.e060",
+            "stroke": "#CCC"
+        },
+        {
+            "source": "64fbfc05.2a0a",
+            "target": "1d2d096f.9874",
+            "stroke": "#CCC"
+        },
+        {
+            "source": "382941e3.b608",
+            "target": "f02b20c8.1ff4",
+            "stroke": "#CCC"
+        },
+        {
+            "source": "1d2d096f.522f",
+            "target": "806f08c9.0138",
+            "stroke": "#CCC"
+        },
+        {
+            "source": "591219a4.7bc7",
+            "target": "806f08c9.0138",
+            "stroke": "#CCC"
+        },
+        {
+            "source": "f02b20c8.4753",
+            "target": "24558819.d17b",
+            "stroke": "#CCC"
+        },
+        {
+            "source": "24558819.847b",
+            "target": "a20c83b7.aac4",
+            "stroke": "#CCC"
+        }
+    ]
+}
