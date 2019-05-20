@@ -62,10 +62,25 @@ function registerEvents() {
     y /= designer.scale;
 
     var node = JSON.parse(JSON.stringify(control));
+
+    console.log(node);
+
+    node.inputs = [];
+    for (var inputConnection in node.inputConnections) {
+      node.inputs.push(inputConnection);
+    }
+
+    node.outputs = [];
+    for (var outputConnection in node.outputConnections) {
+      node.outputs.push(outputConnection);
+    }
+
     node.data = {};
     node.configParameters = node.configParameters || [];
+
     for (var config of node.configParameters) {
-      node.data[config] = 'value';
+      config.value = 'value';
+      node.data[config.name] = config;
     }
 
     node.x = x;

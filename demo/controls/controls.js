@@ -1,504 +1,511 @@
 var controls = controls || [];
 controls = [
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Input"
-    ],
-    "outputs": [],
+    "inputConnections": {
+      "Input": []
+    },
+    "outputConnections": {},
     "configParameters": [
-      "Key"
-    ],
-    "inputParameters": [],
-    "outputParameters": [],
-    "id": null,
-    "name": "Link Input",
-    "description": "Source for flow links",
-    "type": "Link",
-    "category": "Flow",
-    "backgroundColor": "#70AE98"
-  },
-  {
-    "foregroundColor": null,
-    "inputs": [],
-    "outputs": [
-      "Output"
-    ],
-    "configParameters": [
-      "Key"
-    ],
-    "inputParameters": [],
-    "outputParameters": [],
-    "id": null,
-    "name": "Link Output",
-    "description": "Target for flow links",
-    "type": "Link",
-    "category": "Flow",
-    "backgroundColor": "#70AE98"
-  },
-  {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnSuccess",
-      "OnError"
-    ],
-    "configParameters": [
-      "Headers",
-      "ProgressMessage",
-      "DisplayProgress",
-      "BaseUrl",
-      "Timeout",
-      "Endpoint"
-    ],
-    "inputParameters": [
       {
-        "name": "Data",
-        "type": "System.Object"
+        "name": "Key",
+        "type": "String",
+        "required": true
       }
     ],
-    "outputParameters": [
+    "id": null,
+    "name": "Link Input",
+    "description": "Source for flow links"
+  },
+  {
+    "inputConnections": {},
+    "outputConnections": {
+      "Output": []
+    },
+    "configParameters": [
       {
-        "name": "Response",
-        "type": "dCode.Common.Http.Response"
+        "name": "Key",
+        "type": "String",
+        "required": true
+      }
+    ],
+    "id": null,
+    "name": "Link Output",
+    "description": "Target for flow links"
+  },
+  {
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "Object",
+          "required": true
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnSuccess": [
+        {
+          "name": null,
+          "type": "Response",
+          "required": true
+        }
+      ],
+      "OnError": [
+        {
+          "name": null,
+          "type": "Response",
+          "required": true
+        }
+      ]
+    },
+    "configParameters": [
+      {
+        "name": "Headers",
+        "type": "Dictionary`2",
+        "required": true
       },
       {
-        "name": "Exception",
-        "type": "System.Exception"
+        "name": "ProgressMessage",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "DisplayProgress",
+        "type": "Boolean",
+        "required": true
+      },
+      {
+        "name": "BaseUrl",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "Timeout",
+        "type": "Int32",
+        "required": true
+      },
+      {
+        "name": "Endpoint",
+        "type": "String",
+        "required": true
       }
     ],
     "id": null,
     "name": "Http Post",
-    "description": "Http Post",
-    "type": "Process",
-    "category": "Internet",
-    "backgroundColor": "#9DABDD"
+    "description": "Http Post"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [],
+    "inputConnections": {
+      "Execute": []
+    },
+    "outputConnections": {},
     "configParameters": [
-      "Headers"
+      {
+        "name": "Headers",
+        "type": "Dictionary`2",
+        "required": true
+      }
     ],
-    "inputParameters": [],
-    "outputParameters": [],
     "id": null,
     "name": "Http Headers",
-    "description": "Set Http Headers",
-    "type": "Configuration",
-    "category": "Internet",
-    "backgroundColor": "#9DABDD"
+    "description": "Set Http Headers"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnSuccess",
-      "OnError"
-    ],
+    "inputConnections": {
+      "Execute": []
+    },
+    "outputConnections": {
+      "OnSuccess": [
+        {
+          "name": null,
+          "type": "Response",
+          "required": true
+        }
+      ],
+      "OnError": [
+        {
+          "name": null,
+          "type": "Response",
+          "required": true
+        }
+      ]
+    },
     "configParameters": [
-      "Parameters",
-      "Headers",
-      "ProgressMessage",
-      "DisplayProgress",
-      "BaseUrl",
-      "Timeout",
-      "Endpoint"
-    ],
-    "inputParameters": [],
-    "outputParameters": [
       {
-        "name": "Response",
-        "type": "dCode.Common.Http.Response"
+        "name": "Parameters",
+        "type": "Dictionary`2",
+        "required": true
       },
       {
-        "name": "Exception",
-        "type": "System.Exception"
+        "name": "Headers",
+        "type": "Dictionary`2",
+        "required": true
+      },
+      {
+        "name": "ProgressMessage",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "DisplayProgress",
+        "type": "Boolean",
+        "required": true
+      },
+      {
+        "name": "BaseUrl",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "Timeout",
+        "type": "Int32",
+        "required": true
+      },
+      {
+        "name": "Endpoint",
+        "type": "String",
+        "required": true
       }
     ],
     "id": null,
     "name": "Http Get",
-    "description": "Http Get",
-    "type": "Process",
-    "category": "Internet",
-    "backgroundColor": "#9DABDD"
+    "description": "Http Get"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnAccept",
-      "OnCancel"
-    ],
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "Exception",
+          "required": false
+        },
+        {
+          "name": null,
+          "type": "MessageDialog",
+          "required": false
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnAccept": [],
+      "OnCancel": []
+    },
     "configParameters": [
-      "Title",
-      "Message",
-      "Cancel",
-      "Accept"
-    ],
-    "inputParameters": [
       {
-        "name": "Exception",
-        "type": "System.Exception"
+        "name": "Title",
+        "type": "String",
+        "required": true
       },
       {
-        "name": "MessageDialog",
-        "type": "dCode.Xamarin.Common.Entities.MessageDialog"
+        "name": "Message",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "Cancel",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "Accept",
+        "type": "String",
+        "required": true
       }
     ],
-    "outputParameters": [],
     "id": null,
     "name": "Display Message",
-    "description": "Display message dialog",
-    "type": "Process",
-    "category": "Native",
-    "backgroundColor": "#E18D96"
+    "description": "Display message dialog"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Exectute"
-    ],
-    "outputs": [
-      "OnBack",
-      "OnNext"
-    ],
+    "inputConnections": {
+      "Exectute": [
+        {
+          "name": "Value",
+          "type": "String",
+          "required": false
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnBack": [],
+      "OnNext": [
+        {
+          "name": "Value",
+          "type": "String",
+          "required": true
+        }
+      ]
+    },
     "configParameters": [
-      "RegexValidation",
-      "Heading",
-      "Prompt",
-      "InputType",
-      "WarningMessage",
-      "Title",
-      "BackText",
-      "NextText"
-    ],
-    "inputParameters": [
       {
-        "name": "Value",
-        "type": "System.String"
-      }
-    ],
-    "outputParameters": [
+        "name": "RegexValidation",
+        "type": "String",
+        "required": true
+      },
       {
-        "name": "Value",
-        "type": "System.String"
+        "name": "Heading",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "Prompt",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "InputType",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "WarningMessage",
+        "type": "String",
+        "required": true
+      },
+      {
+        "name": "Title",
+        "type": "String",
+        "required": false
+      },
+      {
+        "name": "BackText",
+        "type": "String",
+        "required": false
+      },
+      {
+        "name": "NextText",
+        "type": "String",
+        "required": false
       }
     ],
     "id": null,
     "name": "Value Prompt",
-    "description": "Prompt user input",
-    "type": "View",
-    "category": "Input",
-    "backgroundColor": "#E18D96"
+    "description": "Prompt user input"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnItemSelected",
-      "OnBack"
-    ],
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "IEnumerable`1",
+          "required": true
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnItemSelected": [
+        {
+          "name": null,
+          "type": "Object",
+          "required": true
+        }
+      ],
+      "OnBack": []
+    },
     "configParameters": [
-      "RequireConfirmation",
-      "Title",
-      "BackText",
-      "NextText"
-    ],
-    "inputParameters": [
       {
-        "name": "ItemsSource",
-        "type": "System.Collections.Generic.IEnumerable"
-      }
-    ],
-    "outputParameters": [
+        "name": "RequireConfirmation",
+        "type": "Boolean",
+        "required": true
+      },
       {
-        "name": "SelectedItem",
-        "type": "System.Object"
+        "name": "Title",
+        "type": "String",
+        "required": false
+      },
+      {
+        "name": "BackText",
+        "type": "String",
+        "required": false
+      },
+      {
+        "name": "NextText",
+        "type": "String",
+        "required": false
       }
     ],
     "id": null,
     "name": "List View",
-    "description": "Display a list",
-    "type": "View",
-    "category": "Display",
-    "backgroundColor": "#E18D96"
+    "description": "Display a list"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnBack",
-      "OnNext"
-    ],
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "Object",
+          "required": true
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnBack": [],
+      "OnNext": []
+    },
     "configParameters": [
-      "Title",
-      "BackText",
-      "NextText"
-    ],
-    "inputParameters": [
       {
-        "name": "Data",
-        "type": "System.Object"
+        "name": "Title",
+        "type": "String",
+        "required": false
       },
       {
-        "name": "Response",
-        "type": "dCode.Common.Http.Response"
+        "name": "BackText",
+        "type": "String",
+        "required": false
+      },
+      {
+        "name": "NextText",
+        "type": "String",
+        "required": false
       }
     ],
-    "outputParameters": [],
     "id": null,
     "name": "Information Grid",
-    "description": "Display information grid",
-    "type": "View",
-    "category": "Display",
-    "backgroundColor": "#E18D96"
+    "description": "Display information grid"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnBack"
-    ],
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": "ErrorMessage",
+          "type": "String",
+          "required": true
+        },
+        {
+          "name": "ErrorTitle",
+          "type": "String",
+          "required": true
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnBack": []
+    },
     "configParameters": [
-      "Title",
-      "BackText",
-      "NextText"
-    ],
-    "inputParameters": [
       {
-        "name": "Response",
-        "type": "dCode.Common.Http.Response"
+        "name": "Title",
+        "type": "String",
+        "required": false
+      },
+      {
+        "name": "BackText",
+        "type": "String",
+        "required": false
+      },
+      {
+        "name": "NextText",
+        "type": "String",
+        "required": false
       }
     ],
-    "outputParameters": [],
-    "id": null,
-    "name": "Weather",
-    "description": "Display weather data",
-    "type": "View",
-    "category": "Functionality",
-    "backgroundColor": "#E08963"
-  },
-  {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnBack"
-    ],
-    "configParameters": [
-      "ErrorTitle",
-      "ErrorMessage",
-      "Title",
-      "BackText",
-      "NextText"
-    ],
-    "inputParameters": [],
-    "outputParameters": [],
     "id": null,
     "name": "System Error",
-    "description": "Display system error message",
-    "type": "Internal",
-    "category": "Functionality",
-    "backgroundColor": "#E08963"
+    "description": "Display system error message"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnSettingsCompleted"
-    ],
-    "configParameters": [
-      "Title",
-      "BackText",
-      "NextText"
-    ],
-    "inputParameters": [
-      {
-        "name": "User",
-        "type": "dCode.Models.Core.User"
-      }
-    ],
-    "outputParameters": [
-      {
-        "name": "User",
-        "type": "dCode.Models.Core.User"
-      }
-    ],
-    "id": null,
-    "name": "Settings",
-    "description": "Device and server settings",
-    "type": "View",
-    "category": "Functionality",
-    "backgroundColor": "#E08963"
-  },
-  {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnLoginCompleted",
-      "OnSettingsRequested"
-    ],
-    "configParameters": [
-      "Title",
-      "BackText",
-      "NextText"
-    ],
-    "inputParameters": [
-      {
-        "name": "User",
-        "type": "dCode.Models.Core.User"
-      }
-    ],
-    "outputParameters": [
-      {
-        "name": "User",
-        "type": "dCode.Models.Core.User"
-      }
-    ],
-    "id": null,
-    "name": "Login",
-    "description": "User authentication",
-    "type": "View",
-    "category": "Functionality",
-    "backgroundColor": "#E08963"
-  },
-  {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnSubflowCancelled",
-      "OnSubflowCompleted",
-      "OnSubflowError"
-    ],
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "String",
+          "required": true
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnSubflowCancelled": [],
+      "OnSubflowCompleted": [],
+      "OnSubflowError": []
+    },
     "configParameters": [],
-    "inputParameters": [
-      {
-        "name": "Path",
-        "type": "System.String"
-      }
-    ],
-    "outputParameters": [],
     "id": null,
     "name": "Flow Subflow",
-    "description": "Initialize a subflow",
-    "type": "Process",
-    "category": "Functionality",
-    "backgroundColor": "#2E8364"
+    "description": "Initialize a subflow"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [],
+    "inputConnections": {
+      "Execute": []
+    },
+    "outputConnections": {},
     "configParameters": [],
-    "inputParameters": [],
-    "outputParameters": [],
     "id": null,
     "name": "Flow Cancel",
-    "description": "Cancel a flow",
-    "type": "Process",
-    "category": "Functionality",
-    "backgroundColor": "#2E8364"
+    "description": "Cancel a flow"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [],
+    "inputConnections": {
+      "Execute": []
+    },
+    "outputConnections": {},
     "configParameters": [],
-    "inputParameters": [],
-    "outputParameters": [],
     "id": null,
     "name": "Flow Complete",
-    "description": "Complete a flow",
-    "type": "Process",
-    "category": "Functionality",
-    "backgroundColor": "#2E8364"
+    "description": "Complete a flow"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [],
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "Exception",
+          "required": true
+        }
+      ]
+    },
+    "outputConnections": {},
     "configParameters": [],
-    "inputParameters": [],
-    "outputParameters": [],
     "id": null,
     "name": "Flow Error",
-    "description": "Global flow error",
-    "type": "Process",
-    "category": "Functionality",
-    "backgroundColor": "#2E8364"
+    "description": "Global flow error"
   },
   {
-    "foregroundColor": null,
-    "inputs": [],
-    "outputs": [
-      "Output"
-    ],
+    "inputConnections": {},
+    "outputConnections": {
+      "Output": []
+    },
     "configParameters": [
-      "Configuration"
+      {
+        "name": "Configuration",
+        "type": "Dictionary`2",
+        "required": true
+      }
     ],
-    "inputParameters": [],
-    "outputParameters": [],
     "id": null,
     "name": "Flow Start",
-    "description": "Start a flow",
-    "type": "Process",
-    "category": "Functionality",
-    "backgroundColor": "#2E8364"
+    "description": "Start a flow"
   },
   {
-    "foregroundColor": null,
-    "inputs": [
-      "Execute"
-    ],
-    "outputs": [
-      "OnFlowSelected"
-    ],
+    "inputConnections": {
+      "Execute": []
+    },
+    "outputConnections": {
+      "OnFlowSelected": [
+        {
+          "name": null,
+          "type": "String",
+          "required": true
+        }
+      ]
+    },
     "configParameters": [
-      "Title",
-      "BackText",
-      "NextText"
-    ],
-    "inputParameters": [],
-    "outputParameters": [
       {
-        "name": "Path",
-        "type": "System.String"
+        "name": "Title",
+        "type": "String",
+        "required": false
+      },
+      {
+        "name": "BackText",
+        "type": "String",
+        "required": false
+      },
+      {
+        "name": "NextText",
+        "type": "String",
+        "required": false
       }
     ],
     "id": null,
     "name": "Flow List",
-    "description": "Display flows on device",
-    "type": "View",
-    "category": "Functionality",
-    "backgroundColor": "#ECAD8F"
+    "description": "Display flows on device"
   }
 ]
