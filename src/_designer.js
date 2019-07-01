@@ -76,6 +76,7 @@ class Designer {
     this._nodeContainer = undefined;
     this._linkContainer = undefined;
     this._gridContainer = undefined;
+    this._gridPatternId = FlowJS.Tools.GenerateId(8);
 
     this.updateTheme();
 
@@ -251,7 +252,7 @@ class Designer {
       }
     }
 
-    this._gridContainer.setAttribute('fill', 'url(#GridPattern)');
+    this._gridContainer.setAttribute('fill', `url(#${this._gridPatternId})`);
   }
 
   _refreshGridLines() {
@@ -260,7 +261,7 @@ class Designer {
     }
 
     this._gridPattern = FlowJS.Tools.GenerateSVG('pattern', {
-      'id': 'GridPattern',
+      'id': this._gridPatternId,
       'x': 0,
       'y': 0,
       'width': (FlowJS.Config.Grid.Size / this.width),
@@ -289,7 +290,7 @@ class Designer {
     }
 
     this._gridPattern = FlowJS.Tools.GenerateSVG('pattern', {
-      'id': 'GridPattern',
+      'id': this._gridPatternId,
       'x': 0,
       'y': 0,
       'width': (FlowJS.Config.Grid.Size / this.width),
@@ -313,7 +314,7 @@ class Designer {
     dot.isBackground = true;
     dot.designer = this;
 
-    this._gridContainer.setAttribute('fill', 'url(#GridPattern)');
+    this._gridContainer.setAttribute('fill', `url(#${this._gridPatternId})`);
   }
 
   _populateLineDetails(line) {

@@ -1,4 +1,4 @@
-## FlowJS
+# FlowJS
 
 FlowJS is a visual designer to create and manipulate nodes and links between them.
 

@@ -9,7 +9,8 @@ controls = [
       {
         "name": "Key",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       }
     ],
     "id": null,
@@ -25,7 +26,8 @@ controls = [
       {
         "name": "Key",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       }
     ],
     "id": null,
@@ -38,7 +40,8 @@ controls = [
         {
           "name": null,
           "type": "Object",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -47,14 +50,16 @@ controls = [
         {
           "name": null,
           "type": "Response",
-          "required": true
+          "required": true,
+          "value": null
         }
       ],
       "OnError": [
         {
           "name": null,
           "type": "Response",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -62,32 +67,38 @@ controls = [
       {
         "name": "Headers",
         "type": "Dictionary`2",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "ProgressMessage",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "DisplayProgress",
         "type": "Boolean",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "BaseUrl",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "Timeout",
         "type": "Int32",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "Endpoint",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       }
     ],
     "id": null,
@@ -103,7 +114,8 @@ controls = [
       {
         "name": "Headers",
         "type": "Dictionary`2",
-        "required": true
+        "required": true,
+        "value": null
       }
     ],
     "id": null,
@@ -119,14 +131,16 @@ controls = [
         {
           "name": null,
           "type": "Response",
-          "required": true
+          "required": true,
+          "value": null
         }
       ],
       "OnError": [
         {
           "name": null,
           "type": "Response",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -134,37 +148,44 @@ controls = [
       {
         "name": "Parameters",
         "type": "Dictionary`2",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "Headers",
         "type": "Dictionary`2",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "ProgressMessage",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "DisplayProgress",
         "type": "Boolean",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "BaseUrl",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "Timeout",
         "type": "Int32",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "Endpoint",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       }
     ],
     "id": null,
@@ -177,12 +198,14 @@ controls = [
         {
           "name": null,
           "type": "Exception",
-          "required": false
+          "required": false,
+          "value": null
         },
         {
           "name": null,
           "type": "MessageDialog",
-          "required": false
+          "required": false,
+          "value": null
         }
       ]
     },
@@ -194,22 +217,26 @@ controls = [
       {
         "name": "Title",
         "type": "String",
-        "required": true
+        "required": false,
+        "value": null
       },
       {
         "name": "Message",
         "type": "String",
-        "required": true
+        "required": false,
+        "value": null
       },
       {
         "name": "Cancel",
         "type": "String",
-        "required": true
+        "required": false,
+        "value": null
       },
       {
         "name": "Accept",
         "type": "String",
-        "required": true
+        "required": false,
+        "value": null
       }
     ],
     "id": null,
@@ -222,7 +249,8 @@ controls = [
         {
           "name": "Value",
           "type": "String",
-          "required": false
+          "required": false,
+          "value": null
         }
       ]
     },
@@ -232,7 +260,8 @@ controls = [
         {
           "name": "Value",
           "type": "String",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -240,42 +269,50 @@ controls = [
       {
         "name": "RegexValidation",
         "type": "String",
-        "required": true
+        "required": false,
+        "value": null
       },
       {
         "name": "Heading",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "Prompt",
         "type": "String",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "InputType",
         "type": "String",
-        "required": true
+        "required": false,
+        "value": null
       },
       {
         "name": "WarningMessage",
         "type": "String",
-        "required": true
+        "required": false,
+        "value": null
       },
       {
         "name": "Title",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "BackText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "NextText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       }
     ],
     "id": null,
@@ -288,7 +325,8 @@ controls = [
         {
           "name": null,
           "type": "IEnumerable`1",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -297,7 +335,8 @@ controls = [
         {
           "name": null,
           "type": "Object",
-          "required": true
+          "required": true,
+          "value": null
         }
       ],
       "OnBack": []
@@ -306,22 +345,26 @@ controls = [
       {
         "name": "RequireConfirmation",
         "type": "Boolean",
-        "required": true
+        "required": true,
+        "value": null
       },
       {
         "name": "Title",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "BackText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "NextText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       }
     ],
     "id": null,
@@ -334,7 +377,8 @@ controls = [
         {
           "name": null,
           "type": "Object",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -346,17 +390,20 @@ controls = [
       {
         "name": "Title",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "BackText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "NextText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       }
     ],
     "id": null,
@@ -369,12 +416,14 @@ controls = [
         {
           "name": "ErrorMessage",
           "type": "String",
-          "required": true
+          "required": true,
+          "value": null
         },
         {
           "name": "ErrorTitle",
           "type": "String",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -385,17 +434,20 @@ controls = [
       {
         "name": "Title",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "BackText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "NextText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       }
     ],
     "id": null,
@@ -408,7 +460,8 @@ controls = [
         {
           "name": null,
           "type": "String",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -448,7 +501,8 @@ controls = [
         {
           "name": null,
           "type": "Exception",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -467,7 +521,8 @@ controls = [
       {
         "name": "Configuration",
         "type": "Dictionary`2",
-        "required": true
+        "required": true,
+        "value": null
       }
     ],
     "id": null,
@@ -483,7 +538,8 @@ controls = [
         {
           "name": null,
           "type": "String",
-          "required": true
+          "required": true,
+          "value": null
         }
       ]
     },
@@ -491,21 +547,233 @@ controls = [
       {
         "name": "Title",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "BackText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       },
       {
         "name": "NextText",
         "type": "String",
-        "required": false
+        "required": false,
+        "value": null
       }
     ],
     "id": null,
     "name": "Flow List",
     "description": "Display flows on device"
+  },
+  {
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "PurchaseOrder",
+          "required": true,
+          "value": null
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnError": [
+        {
+          "name": null,
+          "type": "Exception",
+          "required": true,
+          "value": null
+        }
+      ],
+      "OnComplete": [
+        {
+          "name": null,
+          "type": "String",
+          "required": true,
+          "value": null
+        }
+      ]
+    },
+    "configParameters": [],
+    "id": null,
+    "name": "Save PO",
+    "description": "Save PO To server"
+  },
+  {
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "PurchaseOrderItem",
+          "required": true,
+          "value": null
+        }
+      ]
+    },
+    "outputConnections": {},
+    "configParameters": [],
+    "id": null,
+    "name": "Print Barcode",
+    "description": "Print barcode"
+  },
+  {
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": "Value",
+          "type": "String",
+          "required": true,
+          "value": null
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnError": [
+        {
+          "name": null,
+          "type": "Exception",
+          "required": true,
+          "value": null
+        }
+      ],
+      "OnComplete": [
+        {
+          "name": null,
+          "type": "PurchaseOrder",
+          "required": true,
+          "value": null
+        }
+      ]
+    },
+    "configParameters": [],
+    "id": null,
+    "name": "Get PO",
+    "description": "Get PO from SAP"
+  },
+  {
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "PurchaseOrder",
+          "required": true,
+          "value": null
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnBack": [],
+      "OnNext": [
+        {
+          "name": null,
+          "type": "PurchaseOrderItem",
+          "required": true,
+          "value": null
+        }
+      ]
+    },
+    "configParameters": [
+      {
+        "name": "Title",
+        "type": "String",
+        "required": false,
+        "value": null
+      },
+      {
+        "name": "BackText",
+        "type": "String",
+        "required": false,
+        "value": null
+      },
+      {
+        "name": "NextText",
+        "type": "String",
+        "required": false,
+        "value": null
+      }
+    ],
+    "id": null,
+    "name": "Display PO Item List",
+    "description": "Display PO Item List"
+  },
+  {
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "PurchaseOrderItem",
+          "required": true,
+          "value": null
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnNext": [],
+      "OnBack": []
+    },
+    "configParameters": [
+      {
+        "name": "Title",
+        "type": "String",
+        "required": false,
+        "value": null
+      },
+      {
+        "name": "BackText",
+        "type": "String",
+        "required": false,
+        "value": null
+      },
+      {
+        "name": "NextText",
+        "type": "String",
+        "required": false,
+        "value": null
+      }
+    ],
+    "id": null,
+    "name": "Display PO Item",
+    "description": "Display PO Item"
+  },
+  {
+    "inputConnections": {
+      "Execute": [
+        {
+          "name": null,
+          "type": "PurchaseOrder",
+          "required": true,
+          "value": null
+        }
+      ]
+    },
+    "outputConnections": {
+      "OnBack": [],
+      "OnNext": []
+    },
+    "configParameters": [
+      {
+        "name": "Title",
+        "type": "String",
+        "required": false,
+        "value": null
+      },
+      {
+        "name": "BackText",
+        "type": "String",
+        "required": false,
+        "value": null
+      },
+      {
+        "name": "NextText",
+        "type": "String",
+        "required": false,
+        "value": null
+      }
+    ],
+    "id": null,
+    "name": "Display PO Header",
+    "description": "Display PO "
   }
 ]
