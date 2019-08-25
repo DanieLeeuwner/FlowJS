@@ -105,5 +105,28 @@ FlowJS.Tools = {
     context.font = font;
     var metrics = context.measureText(text);
     return metrics.width;
+  },
+
+  CopyToClipboard: (value) => {
+    var textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly', '');
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  },
+
+  PasteFromClipboard: async () => {
+    const text = await navigator.clipboard.readText();
+    return text;
+    // var textarea = document.createElement('textarea');
+    // document.body.appendChild(textarea);
+    // document.execCommand('paste');
+    // window.setTimeout(() => {
+    //   var value = textarea.value;
+    //   document.body.removeChild(textarea);
+    //   callback(value);
+    // }, 10);
   }
 }

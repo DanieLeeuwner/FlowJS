@@ -72,7 +72,16 @@ class NodeMovementHandler extends MovementHandler {
   stop(position) {
     super.stop(position);
 
-    if (position.dx == 0 && position.dy == 0) {
+    // refresh node positions
+    for (var i = 0; i < this.nodes.length; i++) {
+      var node = this.nodes[i];
+      node.refreshPosition(true);
+    }
+
+    // refresh node links
+    this.designer.refreshNodeLinks(this.nodes);
+
+    if (Math.abs(position.dx) <= 5 && Math.abs(position.dy) <= 5) {
       if (this.keepSelected == false) {
         this.setSelection([ this.activeNode ]);
         this.designer.callbacks.invokeNodeSelected([ this.activeNode ]);
@@ -86,15 +95,11 @@ class NodeMovementHandler extends MovementHandler {
       for (var i = 0; i < this.nodes.length; i++) {
         var node = this.nodes[i];
 
-        node.refreshPosition(true);
-
         if (this.keepSelected == false) {
           node.selected = false;
           node.refreshBackground();
         }
       }
-
-      this.designer.refreshNodeLinks(this.nodes);
 
       if (this.keepSelected == false) {
         this.nodes = [];

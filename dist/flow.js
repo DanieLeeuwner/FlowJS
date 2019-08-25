@@ -1,6 +1,6 @@
 /*
 Created by filepack
-Date: Monday, July 1, 2019
+Date: Sunday, August 25, 2019
 */
 
 /*
@@ -114,6 +114,29 @@ FlowJS.Tools = {
     context.font = font;
     var metrics = context.measureText(text);
     return metrics.width;
+  },
+
+  CopyToClipboard: (value) => {
+    var textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly', '');
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  },
+
+  PasteFromClipboard: async () => {
+    const text = await navigator.clipboard.readText();
+    return text;
+    // var textarea = document.createElement('textarea');
+    // document.body.appendChild(textarea);
+    // document.execCommand('paste');
+    // window.setTimeout(() => {
+    //   var value = textarea.value;
+    //   document.body.removeChild(textarea);
+    //   callback(value);
+    // }, 10);
   }
 }
 
@@ -644,7 +667,16 @@ class NodeMovementHandler extends MovementHandler {
   stop(position) {
     super.stop(position);
 
-    if (position.dx == 0 && position.dy == 0) {
+    // refresh node positions
+    for (var i = 0; i < this.nodes.length; i++) {
+      var node = this.nodes[i];
+      node.refreshPosition(true);
+    }
+
+    // refresh node links
+    this.designer.refreshNodeLinks(this.nodes);
+
+    if (Math.abs(position.dx) <= 5 && Math.abs(position.dy) <= 5) {
       if (this.keepSelected == false) {
         this.setSelection([ this.activeNode ]);
         this.designer.callbacks.invokeNodeSelected([ this.activeNode ]);
@@ -658,15 +690,11 @@ class NodeMovementHandler extends MovementHandler {
       for (var i = 0; i < this.nodes.length; i++) {
         var node = this.nodes[i];
 
-        node.refreshPosition(true);
-
         if (this.keepSelected == false) {
           node.selected = false;
           node.refreshBackground();
         }
       }
-
-      this.designer.refreshNodeLinks(this.nodes);
 
       if (this.keepSelected == false) {
         this.nodes = [];
@@ -874,17 +902,51 @@ class NodeInputHandler extends InputHandler {
     super(designer);
   }
 
+  exportSelectedNodes() {
+    // export selected nodes and links to clipboard
+    var exportedNodes = this.designer.exportSelectedNodes();
+    if (exportedNodes.nodes.length > 0) {
+      var exportJson = JSON.stringify(exportedNodes);
+      FlowJS.Tools.CopyToClipboard(exportJson);
+      //sessionStorage.setItem('flowjs-clipboard', exportJson);
+    }
+  }
+
   keyPress(e) {
     super.keyPress(e);
 
-    switch (e.keyCode) {
-      case 46:
-        // delete selected nodes
+    console.log(e.key);
+
+    switch (e.key) {
+      case 'Delete':
         this.designer.deleteSelectedNodes();
         break;
-      case 27:
+      case 'Escape':
         this.designer.callbacks.invokeNodeUnselected(this.designer.nodeMovementHandler.nodes);
         this.designer.nodeMovementHandler.setSelection();
+        break;
+
+      case 'c':
+        if (e.ctrlKey) {
+          this.exportSelectedNodes();
+        }
+        break;
+
+       case 'x':
+        if (e.ctrlKey) {
+          this.exportSelectedNodes();
+        }
+        this.designer.deleteSelectedNodes();
+        break;
+
+       case 'v':
+        if (e.ctrlKey) {
+          //var importJson = sessionStorage.getItem('flowjs-clipboard');
+          FlowJS.Tools.PasteFromClipboard().then((data) => {
+            var importedNodes = JSON.parse(data);
+            this.designer.importPartial(importedNodes);
+          });
+        }
         break;
     }
   }
@@ -1071,6 +1133,68 @@ class Designer {
         this.links.push(link);
       }
     }
+  }
+
+  importPartial(data) {
+    if (!data) return;
+
+    this.callbacks.invokeNodeUnselected(this.nodeMovementHandler.nodes);
+    this.nodeMovementHandler.setSelection();
+
+    data.nodes = data.nodes || [];
+    data.links = data.links || [];
+
+    var idMapping = {};
+
+    for (var i = 0; i < data.nodes.length; i++) {
+      idMapping[data.nodes[i].id] = FlowJS.Tools.GenerateId(8);
+
+      var node = new Node(data.nodes[i]);
+      this.nodeMovementHandler.nodes.push(node);
+      node.designer = this;
+      node.id = idMapping[node.id];
+      node.selected = true;
+
+      this.nodes.push(node);
+    }
+
+    for (var i = 0; i < data.links.length; i++) {
+      var linkData = data.links[i];
+
+      var link = new Link(linkData.source, linkData.target, linkData);
+      link.designer = this;
+
+      var sourceNode = idMapping[link.source.substring(0, 8)];
+      var sourceConnector = link.source.substring(9);
+
+      var targetNode = idMapping[link.target.substring(0, 8)];
+      var targetConnector = link.target.substring(9);
+
+      for (var n_id = 0; n_id < this.nodes.length; n_id++) {
+        var node = this.nodes[n_id];
+
+        if (node.id == sourceNode) {
+          var connector = node.getConnector(sourceConnector);
+          if (connector != undefined) {
+            link.sourceConnector = connector;
+          }
+          continue;
+        }
+        if (node.id == targetNode) {
+          var connector = node.getConnector(targetConnector);
+          if (connector != undefined) {
+            link.targetConnector = connector;
+          }
+          continue;
+        }
+      }
+
+      if (link.sourceConnector && link.targetConnector) {
+        this.links.push(link);
+      }
+    }
+
+    this.refresh();
   }
 
   initializeContainer() {
@@ -1313,8 +1437,46 @@ class Designer {
     return designer;
   }
 
+  exportSelectedNodes() {
+    var selectedNodes = [];
+    var selectedLinks = [];
+
+    for (var node of this.nodes) {
+      if (!node.selected) {
+        continue;
+      }
+
+      selectedNodes.push(node);
+    }
+
+    for (var link of this.links) {
+      var sourceExported = false;
+      var targetExported = false;
+
+      for (var node of selectedNodes) {
+        if (link.source.indexOf(node.id) === 0) {
+          sourceExported = true;
+        }
+        if (link.target.indexOf(node.id) === 0) {
+          targetExported = true;
+        }
+      }
+
+      if (sourceExported && targetExported) {
+        selectedLinks.push(link);
+      }
+    }
+
+    var designer = {
+      nodes: FlowJS.Tools.ExportCollection(selectedNodes),
+      links: FlowJS.Tools.ExportCollection(selectedLinks)
+    };
+
+    return designer;
+  }
+
   createNode(data) {
-    // Calculate X and Y position
+    // calculate X and Y position
     data.x = data.x + (this.designContainer.scrollLeft / this.scale);
     data.y = data.y + (this.designContainer.scrollTop / this.scale);
     data.designer = this;

@@ -148,6 +148,68 @@ class Designer {
     }
   }
 
+  importPartial(data) {
+    if (!data) return;
+
+    this.callbacks.invokeNodeUnselected(this.nodeMovementHandler.nodes);
+    this.nodeMovementHandler.setSelection();
+
+    data.nodes = data.nodes || [];
+    data.links = data.links || [];
+
+    var idMapping = {};
+
+    for (var i = 0; i < data.nodes.length; i++) {
+      idMapping[data.nodes[i].id] = FlowJS.Tools.GenerateId(8);
+
+      var node = new Node(data.nodes[i]);
+      this.nodeMovementHandler.nodes.push(node);
+      node.designer = this;
+      node.id = idMapping[node.id];
+      node.selected = true;
+
+      this.nodes.push(node);
+    }
+
+    for (var i = 0; i < data.links.length; i++) {
+      var linkData = data.links[i];
+
+      var link = new Link(linkData.source, linkData.target, linkData);
+      link.designer = this;
+
+      var sourceNode = idMapping[link.source.substring(0, 8)];
+      var sourceConnector = link.source.substring(9);
+
+      var targetNode = idMapping[link.target.substring(0, 8)];
+      var targetConnector = link.target.substring(9);
+
+      for (var n_id = 0; n_id < this.nodes.length; n_id++) {
+        var node = this.nodes[n_id];
+
+        if (node.id == sourceNode) {
+          var connector = node.getConnector(sourceConnector);
+          if (connector != undefined) {
+            link.sourceConnector = connector;
+          }
+          continue;
+        }
+        if (node.id == targetNode) {
+          var connector = node.getConnector(targetConnector);
+          if (connector != undefined) {
+            link.targetConnector = connector;
+          }
+          continue;
+        }
+      }
+
+      if (link.sourceConnector && link.targetConnector) {
+        this.links.push(link);
+      }
+    }
+
+    this.refresh();
+  }
+
   initializeContainer() {
     this.container.innerHTML = '';
     this.container.style.overflow = 'hidden';
@@ -388,8 +450,46 @@ class Designer {
     return designer;
   }
 
+  exportSelectedNodes() {
+    var selectedNodes = [];
+    var selectedLinks = [];
+
+    for (var node of this.nodes) {
+      if (!node.selected) {
+        continue;
+      }
+
+      selectedNodes.push(node);
+    }
+
+    for (var link of this.links) {
+      var sourceExported = false;
+      var targetExported = false;
+
+      for (var node of selectedNodes) {
+        if (link.source.indexOf(node.id) === 0) {
+          sourceExported = true;
+        }
+        if (link.target.indexOf(node.id) === 0) {
+          targetExported = true;
+        }
+      }
+
+      if (sourceExported && targetExported) {
+        selectedLinks.push(link);
+      }
+    }
+
+    var designer = {
+      nodes: FlowJS.Tools.ExportCollection(selectedNodes),
+      links: FlowJS.Tools.ExportCollection(selectedLinks)
+    };
+
+    return designer;
+  }
+
   createNode(data) {
-    // Calculate X and Y position
+    // calculate X and Y position
     data.x = data.x + (this.designContainer.scrollLeft / this.scale);
     data.y = data.y + (this.designContainer.scrollTop / this.scale);
     data.designer = this;
