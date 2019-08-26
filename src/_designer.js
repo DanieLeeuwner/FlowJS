@@ -214,8 +214,7 @@ class Designer {
   }
 
   pushUndoHistory() {
-    console.log('pushing history');
-    this.undoHistory.push(this.export());
+    this.undoHistory.push(JSON.stringify(this.export()));
     this.redoHistory = [];
 
     if (this.undoHistory.length > 25) {
@@ -239,7 +238,7 @@ class Designer {
     }
 
     this.redoHistory.push(lastState);
-    this.import(state);
+    this.import(JSON.parse(state));
     this.refresh();
   }
 
@@ -250,7 +249,7 @@ class Designer {
     }
 
     this.undoHistory.push(state);
-    this.import(state);
+    this.import(JSON.parse(state));
     this.refresh();
   }
 
