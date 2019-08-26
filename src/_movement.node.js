@@ -91,6 +91,8 @@ class NodeMovementHandler extends MovementHandler {
         }
       }
     } else {
+      this.designer.pushUndoHistory();
+
       this.designer.callbacks.invokeNodeMoved(this.nodes);
       for (var i = 0; i < this.nodes.length; i++) {
         var node = this.nodes[i];

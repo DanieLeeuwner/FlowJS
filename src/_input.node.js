@@ -11,19 +11,17 @@ class NodeInputHandler extends InputHandler {
     if (exportedNodes.nodes.length > 0) {
       var exportJson = JSON.stringify(exportedNodes);
       FlowJS.Tools.CopyToClipboard(exportJson);
-      //sessionStorage.setItem('flowjs-clipboard', exportJson);
     }
   }
 
   keyPress(e) {
     super.keyPress(e);
 
-    console.log(e.key);
-
     switch (e.key) {
       case 'Delete':
         this.designer.deleteSelectedNodes();
         break;
+
       case 'Escape':
         this.designer.callbacks.invokeNodeUnselected(this.designer.nodeMovementHandler.nodes);
         this.designer.nodeMovementHandler.setSelection();
@@ -35,20 +33,31 @@ class NodeInputHandler extends InputHandler {
         }
         break;
 
-       case 'x':
+      case 'x':
         if (e.ctrlKey) {
           this.exportSelectedNodes();
         }
         this.designer.deleteSelectedNodes();
         break;
 
-       case 'v':
+      case 'v':
         if (e.ctrlKey) {
-          //var importJson = sessionStorage.getItem('flowjs-clipboard');
           FlowJS.Tools.PasteFromClipboard().then((data) => {
             var importedNodes = JSON.parse(data);
             this.designer.importPartial(importedNodes);
           });
+        }
+        break;
+
+      case 'z':
+        if (e.ctrlKey) {
+          this.designer.performUndo();
+        }
+        break;
+
+      case 'y':
+        if (e.ctrlKey) {
+          this.designer.performRedo();
         }
         break;
     }

@@ -10,12 +10,13 @@ class LinkInputHandler extends InputHandler {
 
     if (this.designer.linkMovementHandler.activeLink == undefined) return;
 
-    switch (e.keyCode) {
-      case 46:
+    switch (e.key) {
+      case 'Delete':
         // delete link
         this.designer.deleteLink(this.designer.linkMovementHandler.activeLink);
         break;
-      case 27:
+
+      case 'Escape':
         // deselect link
         this.designer.linkMovementHandler.unfocus();
         break;

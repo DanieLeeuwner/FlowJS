@@ -18,6 +18,9 @@ class Designer {
     this.links = [];
     this.connections = {};
 
+    this.undoHistory = [];
+    this.redoHistory = [];
+
     this.activeMovementHandler = undefined;
     this.selectionMovementHandler = new SelectionMovementHandler(this);
     this.designerMovementHandler = new DesignerMovementHandler(this);
@@ -38,7 +41,7 @@ class Designer {
       nodeUnselected: undefined,
       nodeOpened: undefined,
       nodeDeleted: undefined,
-      nodeMoved: undefined,
+      nodeMoved: undefined
     }
 
     if (data.callbacks) {
@@ -207,6 +210,47 @@ class Designer {
       }
     }
 
+    this.refresh();
+  }
+
+  pushUndoHistory() {
+    console.log('pushing history');
+    this.undoHistory.push(this.export());
+    this.redoHistory = [];
+
+    if (this.undoHistory.length > 25) {
+      this.undoHistory.shift();
+    }
+  }
+
+  pushRedoHistory(data) {
+    this.redoHistory.push[data];
+  }
+
+  performUndo() {
+    if (this.undoHistory.length <= 1) {
+      return;
+    }
+
+    var lastState = this.undoHistory.splice(this.undoHistory.length - 1, 1)[0];
+    var state = this.undoHistory[this.undoHistory.length - 1];
+    if (!state) {
+      return;
+    }
+
+    this.redoHistory.push(lastState);
+    this.import(state);
+    this.refresh();
+  }
+
+  performRedo() {
+    var state = this.redoHistory.splice(this.redoHistory.length - 1, 1)[0];
+    if (!state) {
+      return;
+    }
+
+    this.undoHistory.push(state);
+    this.import(state);
     this.refresh();
   }
 
@@ -499,6 +543,7 @@ class Designer {
 
     this.displayNode(node);
 
+    this.pushUndoHistory();
     return node;
   }
 
@@ -520,7 +565,7 @@ class Designer {
       }
     }
 
-    if (this.validation.invokeNodeDelete(deleteNodes) == false) {
+    if (!this.validation.invokeNodeDelete(deleteNodes)) {
       return;
     }
 
@@ -542,7 +587,7 @@ class Designer {
       var sourceNode = link.sourceConnector.node;
       var targetNode = link.targetConnector.node;
 
-      if (deleteNodes.indexOf(sourceNode) != -1 || deleteNodes.indexOf(targetNode) != -1) {
+      if (deleteNodes.indexOf(sourceNode) !== -1 || deleteNodes.indexOf(targetNode) !== -1) {
         deleteLinks.push(link);
       }
     }
@@ -553,6 +598,10 @@ class Designer {
 
       this.links.splice(index, 1);
       link.destroy();
+    }
+
+    if (deleteNodes.length > 0) {
+      this.pushUndoHistory();
     }
   }
 
@@ -573,6 +622,7 @@ class Designer {
     link.refresh();
 
     this.callbacks.invokeLinkCreated(link);
+    this.pushUndoHistory();
   }
 
   deleteLink(link) {
@@ -586,6 +636,7 @@ class Designer {
       this.links.splice(index, 1);
 
       this.callbacks.invokeLinkDeleted(link);
+      this.pushUndoHistory();
     }
   }
 

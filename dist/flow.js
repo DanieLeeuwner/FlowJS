@@ -1,6 +1,6 @@
 /*
 Created by filepack
-Date: Sunday, August 25, 2019
+Date: Monday, August 26, 2019
 */
 
 /*
@@ -686,6 +686,8 @@ class NodeMovementHandler extends MovementHandler {
         }
       }
     } else {
+      this.designer.pushUndoHistory();
+
       this.designer.callbacks.invokeNodeMoved(this.nodes);
       for (var i = 0; i < this.nodes.length; i++) {
         var node = this.nodes[i];
@@ -854,8 +856,6 @@ FlowJS.Input = {
 
   ActiveDesigner: undefined,
 
-  InputHandlers: {},
-
   UnfocusDesigner: () => {
     if (FlowJS.Input.ActiveDesigner) {
       FlowJS.Input.ActiveDesigner.container.setAttribute('tabindex', null);
@@ -872,13 +872,15 @@ FlowJS.Input = {
   KeyPress: (e) => {
     var designer = FlowJS.Input.ActiveDesigner;
 
-    if (designer == undefined) return;
+    if (designer === undefined) {
+      return;
+    }
 
     for (var i = 0; i < designer.inputHandlers.length; i++) {
       var handler = designer.inputHandlers[i];
       handler.keyPress(e);
     }
-  },
+  }
 }
 
 class InputHandler {
@@ -908,19 +910,17 @@ class NodeInputHandler extends InputHandler {
     if (exportedNodes.nodes.length > 0) {
       var exportJson = JSON.stringify(exportedNodes);
       FlowJS.Tools.CopyToClipboard(exportJson);
-      //sessionStorage.setItem('flowjs-clipboard', exportJson);
     }
   }
 
   keyPress(e) {
     super.keyPress(e);
 
-    console.log(e.key);
-
     switch (e.key) {
       case 'Delete':
         this.designer.deleteSelectedNodes();
         break;
+
       case 'Escape':
         this.designer.callbacks.invokeNodeUnselected(this.designer.nodeMovementHandler.nodes);
         this.designer.nodeMovementHandler.setSelection();
@@ -932,20 +932,31 @@ class NodeInputHandler extends InputHandler {
         }
         break;
 
-       case 'x':
+      case 'x':
         if (e.ctrlKey) {
           this.exportSelectedNodes();
         }
         this.designer.deleteSelectedNodes();
         break;
 
-       case 'v':
+      case 'v':
         if (e.ctrlKey) {
-          //var importJson = sessionStorage.getItem('flowjs-clipboard');
           FlowJS.Tools.PasteFromClipboard().then((data) => {
             var importedNodes = JSON.parse(data);
             this.designer.importPartial(importedNodes);
           });
+        }
+        break;
+
+      case 'z':
+        if (e.ctrlKey) {
+          this.designer.performUndo();
+        }
+        break;
+
+      case 'y':
+        if (e.ctrlKey) {
+          this.designer.performRedo();
         }
         break;
     }
@@ -968,12 +979,13 @@ class LinkInputHandler extends InputHandler {
 
     if (this.designer.linkMovementHandler.activeLink == undefined) return;
 
-    switch (e.keyCode) {
-      case 46:
+    switch (e.key) {
+      case 'Delete':
         // delete link
         this.designer.deleteLink(this.designer.linkMovementHandler.activeLink);
         break;
-      case 27:
+
+      case 'Escape':
         // deselect link
         this.designer.linkMovementHandler.unfocus();
         break;
@@ -1005,6 +1017,9 @@ class Designer {
     this.links = [];
     this.connections = {};
 
+    this.undoHistory = [];
+    this.redoHistory = [];
+
     this.activeMovementHandler = undefined;
     this.selectionMovementHandler = new SelectionMovementHandler(this);
     this.designerMovementHandler = new DesignerMovementHandler(this);
@@ -1025,7 +1040,7 @@ class Designer {
       nodeUnselected: undefined,
       nodeOpened: undefined,
       nodeDeleted: undefined,
-      nodeMoved: undefined,
+      nodeMoved: undefined
     }
 
     if (data.callbacks) {
@@ -1194,6 +1209,47 @@ class Designer {
       }
     }
 
+    this.refresh();
+  }
+
+  pushUndoHistory() {
+    console.log('pushing history');
+    this.undoHistory.push(this.export());
+    this.redoHistory = [];
+
+    if (this.undoHistory.length > 25) {
+      this.undoHistory.shift();
+    }
+  }
+
+  pushRedoHistory(data) {
+    this.redoHistory.push[data];
+  }
+
+  performUndo() {
+    if (this.undoHistory.length <= 1) {
+      return;
+    }
+
+    var lastState = this.undoHistory.splice(this.undoHistory.length - 1, 1)[0];
+    var state = this.undoHistory[this.undoHistory.length - 1];
+    if (!state) {
+      return;
+    }
+
+    this.redoHistory.push(lastState);
+    this.import(state);
+    this.refresh();
+  }
+
+  performRedo() {
+    var state = this.redoHistory.splice(this.redoHistory.length - 1, 1)[0];
+    if (!state) {
+      return;
+    }
+
+    this.undoHistory.push(state);
+    this.import(state);
     this.refresh();
   }
 
@@ -1486,6 +1542,7 @@ class Designer {
 
     this.displayNode(node);
 
+    this.pushUndoHistory();
     return node;
   }
 
@@ -1507,7 +1564,7 @@ class Designer {
       }
     }
 
-    if (this.validation.invokeNodeDelete(deleteNodes) == false) {
+    if (!this.validation.invokeNodeDelete(deleteNodes)) {
       return;
     }
 
@@ -1529,7 +1586,7 @@ class Designer {
       var sourceNode = link.sourceConnector.node;
       var targetNode = link.targetConnector.node;
 
-      if (deleteNodes.indexOf(sourceNode) != -1 || deleteNodes.indexOf(targetNode) != -1) {
+      if (deleteNodes.indexOf(sourceNode) !== -1 || deleteNodes.indexOf(targetNode) !== -1) {
         deleteLinks.push(link);
       }
     }
@@ -1540,6 +1597,10 @@ class Designer {
 
       this.links.splice(index, 1);
       link.destroy();
+    }
+
+    if (deleteNodes.length > 0) {
+      this.pushUndoHistory();
     }
   }
 
@@ -1560,6 +1621,7 @@ class Designer {
     link.refresh();
 
     this.callbacks.invokeLinkCreated(link);
+    this.pushUndoHistory();
   }
 
   deleteLink(link) {
@@ -1573,6 +1635,7 @@ class Designer {
       this.links.splice(index, 1);
 
       this.callbacks.invokeLinkDeleted(link);
+      this.pushUndoHistory();
     }
   }
 
