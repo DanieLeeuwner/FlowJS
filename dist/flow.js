@@ -1,6 +1,6 @@
 /*
 Created by filepack
-Date: Monday, August 26, 2019
+Date: Sunday, September 1, 2019
 */
 
 /*
@@ -1176,14 +1176,17 @@ class Designer {
     for (var i = 0; i < data.links.length; i++) {
       var linkData = data.links[i];
 
+      var sourceNode = idMapping[linkData.source.substring(0, 8)];
+      var sourceConnector = linkData.source.substring(9);
+
+      var targetNode = idMapping[linkData.target.substring(0, 8)];
+      var targetConnector = linkData.target.substring(9);
+
+      linkData.source = `${sourceNode}.${sourceConnector}`;
+      linkData.target = `${targetNode}.${targetConnector}`;
+
       var link = new Link(linkData.source, linkData.target, linkData);
       link.designer = this;
-
-      var sourceNode = idMapping[link.source.substring(0, 8)];
-      var sourceConnector = link.source.substring(9);
-
-      var targetNode = idMapping[link.target.substring(0, 8)];
-      var targetConnector = link.target.substring(9);
 
       for (var n_id = 0; n_id < this.nodes.length; n_id++) {
         var node = this.nodes[n_id];
