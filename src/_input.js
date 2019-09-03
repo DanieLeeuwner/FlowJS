@@ -1,7 +1,3 @@
-"use strict";
-
-var FlowJS = FlowJS || {};
-
 FlowJS.Input = {
 
   ActiveDesigner: undefined,

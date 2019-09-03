@@ -1,5 +1,3 @@
-"use strict";
-
 class Link {
 
   constructor(source, target, data) {

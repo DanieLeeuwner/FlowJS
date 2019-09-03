@@ -1,5 +1,3 @@
-"use strict";
-
 class Connector {
 
   constructor(data) {
@@ -89,7 +87,7 @@ class Connector {
       if (connector.selected) return;
 
       var designer = connector.designer;
-      designer.connectorMovementHandler.finalConnector = connector;      
+      designer.connectorMovementHandler.finalConnector = connector;
     });
 
     this.connector.addEventListener('mouseout', function(e) {
@@ -131,7 +129,7 @@ class Connector {
       });
       this.element.appendChild(this.nameText);
       this.nameText.innerHTML = this.name;
-      
+
       var x = 0;
       var y = 8;
 
@@ -162,6 +160,6 @@ class Connector {
     if (this.selected) return;
 
     this.connector.style.stroke = this.node.borderColor;
-    this.nameText.setAttribute('opacity', 0.2);    
+    this.nameText.setAttribute('opacity', 0.2);
   }
 }

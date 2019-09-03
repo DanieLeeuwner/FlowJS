@@ -1,13 +1,15 @@
 /*
 Created by filepack
-Date: Sunday, September 1, 2019
+Date: Tuesday, September 3, 2019
 */
 
 /*
 File: src/_tools.js
 */
 
-var FlowJS = FlowJS || {};
+"use strict";
+
+var FlowJS = {};
 
 FlowJS.Tools = {
   GenerateId: (length) => {
@@ -43,7 +45,7 @@ FlowJS.Tools = {
       return FlowJS.Tools._containerStyle;
     }
 
-    style = document.createElement('style');
+    let style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML =
      `.FlowJS_Container {
@@ -57,8 +59,7 @@ FlowJS.Tools = {
 
       .FlowJS_Container:focus {
         outline: 0;
-      }
-      `;
+      }`;
     document.getElementsByTagName('head')[0].appendChild(style);
 
     FlowJS.Tools._containerStyle = 'FlowJS_Container';
@@ -144,8 +145,6 @@ FlowJS.Tools = {
 File: src/_path.js
 */
 
-var FlowJS = FlowJS || {};
-
 FlowJS.PathTools = {
 
   _getBasePoints: (type, initialPosition, finalPosition) => {
@@ -164,12 +163,12 @@ FlowJS.PathTools = {
 
       x3 = finalPosition.x - FlowJS.Config.Link.InitialLength;
       x4 = finalPosition.x;
-      y2 = finalPosition.y;      
+      y2 = finalPosition.y;
     } else {
 
       x1 = finalPosition.x;
       x2 = finalPosition.x + FlowJS.Config.Link.InitialLength;
-      y1 = finalPosition.y;  
+      y1 = finalPosition.y;
 
       x3 = initialPosition.x - FlowJS.Config.Link.InitialLength;
       x4 = initialPosition.x;
@@ -221,8 +220,6 @@ FlowJS.PathTools = {
 /*
 File: src/_config.js
 */
-
-var FlowJS = FlowJS || {};
 
 FlowJS.ConnectorStyle = {
   Square: 'Square',
@@ -302,8 +299,6 @@ FlowJS.Config = {
 File: src/_theme.js
 */
 
-var FlowJS = FlowJS || {};
-
 FlowJS.Palette = {
   Pastel: [
     '#FF8B8B',
@@ -361,10 +356,6 @@ FlowJS.Theme = {
 /*
 File: src/_movement.js
 */
-
-"use strict";
-
-var FlowJS = FlowJS || {};
 
 FlowJS.Movement = {
   MouseDown: (e) => {
@@ -493,8 +484,6 @@ class MovementHandler {
 File: src/_movement.selection.js
 */
 
-"use strict";
-
 class SelectionMovementHandler extends MovementHandler {
   constructor(designer) {
     super(designer);
@@ -551,8 +540,6 @@ class SelectionMovementHandler extends MovementHandler {
 File: src/_movement.designer.js
 */
 
-"use strict";
-
 class DesignerMovementHandler extends MovementHandler {
   constructor(designer) {
     super(designer);
@@ -592,8 +579,6 @@ class DesignerMovementHandler extends MovementHandler {
 /*
 File: src/_movement.node.js
 */
-
-"use strict";
 
 class NodeMovementHandler extends MovementHandler {
   constructor(designer) {
@@ -716,8 +701,6 @@ class NodeMovementHandler extends MovementHandler {
 File: src/_movement.connector.js
 */
 
-"use strict";
-
 class ConnectorMovementHandler extends MovementHandler {
   constructor(designer) {
     super(designer);
@@ -786,8 +769,6 @@ class ConnectorMovementHandler extends MovementHandler {
 File: src/_movement.link.js
 */
 
-"use strict";
-
 class LinkMovementHandler extends MovementHandler {
   constructor(designer) {
     super(designer);
@@ -848,10 +829,6 @@ class LinkMovementHandler extends MovementHandler {
 File: src/_input.js
 */
 
-"use strict";
-
-var FlowJS = FlowJS || {};
-
 FlowJS.Input = {
 
   ActiveDesigner: undefined,
@@ -896,8 +873,6 @@ class InputHandler {
 /*
 File: src/_input.node.js
 */
-
-"use strict";
 
 class NodeInputHandler extends InputHandler {
   constructor(designer) {
@@ -967,8 +942,6 @@ class NodeInputHandler extends InputHandler {
 File: src/_input.link.js
 */
 
-"use strict";
-
 class LinkInputHandler extends InputHandler {
   constructor(designer) {
     super(designer);
@@ -996,8 +969,6 @@ class LinkInputHandler extends InputHandler {
 /*
 File: src/_designer.js
 */
-
-"use strict";
 
 class Designer {
 
@@ -1033,6 +1004,7 @@ class Designer {
 
     this.callbacks = {
       linkCreated: undefined,
+      linkImported: undefined,
       linkSelected: undefined,
       linkUnselected: undefined,
       linkDeleted: undefined,
@@ -1045,6 +1017,7 @@ class Designer {
 
     if (data.callbacks) {
       this.callbacks.linkCreated = data.callbacks.linkCreated || undefined;
+      this.callbacks.linkImported = data.callbacks.linkImported || undefined;
       this.callbacks.linkSelected = data.callbacks.linkSelected || undefined;
       this.callbacks.linkUnselected = data.callbacks.linkUnselected || undefined;
       this.callbacks.linkDeleted = data.callbacks.linkDeleted || undefined;
@@ -1097,18 +1070,20 @@ class Designer {
     //this.linkColor = this.theme.Link;
   }
 
-  import(data) {
+  import(data, selectNodes) {
     if (!data) return;
 
     data.nodes = data.nodes || [];
     data.links = data.links || [];
 
-    this.nodes = [];
-    this.links = [];
-
     for (var i = 0; i < data.nodes.length; i++) {
       var node = new Node(data.nodes[i]);
       node.designer = this;
+
+      if (selectNodes) {
+        node.selected = true;
+        this.nodeMovementHandler.nodes.push(node);
+      }
 
       this.nodes.push(node);
     }
@@ -1146,6 +1121,7 @@ class Designer {
 
       if (link.sourceConnector && link.targetConnector) {
         this.links.push(link);
+        this.callbacks.invokeLinkImported(link);
       }
     }
   }
@@ -1161,61 +1137,54 @@ class Designer {
 
     var idMapping = {};
 
-    for (var i = 0; i < data.nodes.length; i++) {
-      idMapping[data.nodes[i].id] = FlowJS.Tools.GenerateId(8);
-
-      var node = new Node(data.nodes[i]);
-      this.nodeMovementHandler.nodes.push(node);
-      node.designer = this;
-      node.id = idMapping[node.id];
-      node.selected = true;
-
-      this.nodes.push(node);
+    const generateUniqueId = (count) => {
+      let id = undefined;
+      do {
+        // ensure id is not in list of mappings
+        id = FlowJS.Tools.GenerateId(count);
+      } while (idMapping[id]);
+      return id;
     }
 
-    for (var i = 0; i < data.links.length; i++) {
-      var linkData = data.links[i];
+    for (let node of data.nodes) {
+      // node id remapping
+      const newNodeId = generateUniqueId(8);
+      idMapping[node.id] = newNodeId;
+      node.id = newNodeId;
 
-      var sourceNode = idMapping[linkData.source.substring(0, 8)];
-      var sourceConnector = linkData.source.substring(9);
-
-      var targetNode = idMapping[linkData.target.substring(0, 8)];
-      var targetConnector = linkData.target.substring(9);
-
-      linkData.source = `${sourceNode}.${sourceConnector}`;
-      linkData.target = `${targetNode}.${targetConnector}`;
-
-      var link = new Link(linkData.source, linkData.target, linkData);
-      link.designer = this;
-
-      for (var n_id = 0; n_id < this.nodes.length; n_id++) {
-        var node = this.nodes[n_id];
-
-        if (node.id == sourceNode) {
-          var connector = node.getConnector(sourceConnector);
-          if (connector != undefined) {
-            link.sourceConnector = connector;
-          }
-          continue;
-        }
-        if (node.id == targetNode) {
-          var connector = node.getConnector(targetConnector);
-          if (connector != undefined) {
-            link.targetConnector = connector;
-          }
-          continue;
-        }
+      for (let input of node.inputs) {
+        // input connector id remapping
+        const newConnectorId = generateUniqueId(4);
+        idMapping[input.id] = newConnectorId;
+        input.id = newConnectorId;
       }
 
-      if (link.sourceConnector && link.targetConnector) {
-        this.links.push(link);
+      for (let output of node.outputs) {
+        // output connector id remapping
+        const newConnectorId = generateUniqueId(4);
+        idMapping[output.id] = newConnectorId;
+        output.id = newConnectorId;
       }
     }
 
+    for (let link of data.links) {
+      // link id remapping
+      var sourceNode = idMapping[link.source.substring(0, 8)];
+      var sourceConnector = idMapping[link.source.substring(9)];
+
+      var targetNode = idMapping[link.target.substring(0, 8)];
+      var targetConnector = idMapping[link.target.substring(9)];
+
+      link.source = `${sourceNode}.${sourceConnector}`;
+      link.target = `${targetNode}.${targetConnector}`;
+    }
+
+    this.import(data, true);
     this.refresh();
   }
 
   pushUndoHistory() {
+    // clone into history by value
     this.undoHistory.push(JSON.stringify(this.export()));
     this.redoHistory = [];
 
@@ -1649,6 +1618,13 @@ class Designer {
       this.callbacks.linkCreated(link);
     };
 
+    this.callbacks.invokeLinkImported = (link) => {
+      if (!this.callbacks.linkImported) return;
+      if (!link) return;
+
+      this.callbacks.linkImported(link);
+    };
+
     this.callbacks.invokeLinkDeleted = (link) => {
       if (!this.callbacks.linkDeleted) return;
       if (!link) return;
@@ -1728,8 +1704,6 @@ class Designer {
 /*
 File: src/_node.js
 */
-
-"use strict";
 
 class Node {
 
@@ -2058,8 +2032,6 @@ class Node {
 File: src/_connector.js
 */
 
-"use strict";
-
 class Connector {
 
   constructor(data) {
@@ -2149,7 +2121,7 @@ class Connector {
       if (connector.selected) return;
 
       var designer = connector.designer;
-      designer.connectorMovementHandler.finalConnector = connector;      
+      designer.connectorMovementHandler.finalConnector = connector;
     });
 
     this.connector.addEventListener('mouseout', function(e) {
@@ -2191,7 +2163,7 @@ class Connector {
       });
       this.element.appendChild(this.nameText);
       this.nameText.innerHTML = this.name;
-      
+
       var x = 0;
       var y = 8;
 
@@ -2222,15 +2194,13 @@ class Connector {
     if (this.selected) return;
 
     this.connector.style.stroke = this.node.borderColor;
-    this.nameText.setAttribute('opacity', 0.2);    
+    this.nameText.setAttribute('opacity', 0.2);
   }
 }
 
 /*
 File: src/_link.js
 */
-
-"use strict";
 
 class Link {
 

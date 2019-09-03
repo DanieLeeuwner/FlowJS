@@ -1,5 +1,3 @@
-"use strict";
-
 class Designer {
 
   constructor(data) {
@@ -34,6 +32,7 @@ class Designer {
 
     this.callbacks = {
       linkCreated: undefined,
+      linkImported: undefined,
       linkSelected: undefined,
       linkUnselected: undefined,
       linkDeleted: undefined,
@@ -46,6 +45,7 @@ class Designer {
 
     if (data.callbacks) {
       this.callbacks.linkCreated = data.callbacks.linkCreated || undefined;
+      this.callbacks.linkImported = data.callbacks.linkImported || undefined;
       this.callbacks.linkSelected = data.callbacks.linkSelected || undefined;
       this.callbacks.linkUnselected = data.callbacks.linkUnselected || undefined;
       this.callbacks.linkDeleted = data.callbacks.linkDeleted || undefined;
@@ -98,18 +98,20 @@ class Designer {
     //this.linkColor = this.theme.Link;
   }
 
-  import(data) {
+  import(data, selectNodes) {
     if (!data) return;
 
     data.nodes = data.nodes || [];
     data.links = data.links || [];
 
-    this.nodes = [];
-    this.links = [];
-
     for (var i = 0; i < data.nodes.length; i++) {
       var node = new Node(data.nodes[i]);
       node.designer = this;
+
+      if (selectNodes) {
+        node.selected = true;
+        this.nodeMovementHandler.nodes.push(node);
+      }
 
       this.nodes.push(node);
     }
@@ -147,6 +149,7 @@ class Designer {
 
       if (link.sourceConnector && link.targetConnector) {
         this.links.push(link);
+        this.callbacks.invokeLinkImported(link);
       }
     }
   }
@@ -162,61 +165,54 @@ class Designer {
 
     var idMapping = {};
 
-    for (var i = 0; i < data.nodes.length; i++) {
-      idMapping[data.nodes[i].id] = FlowJS.Tools.GenerateId(8);
-
-      var node = new Node(data.nodes[i]);
-      this.nodeMovementHandler.nodes.push(node);
-      node.designer = this;
-      node.id = idMapping[node.id];
-      node.selected = true;
-
-      this.nodes.push(node);
+    const generateUniqueId = (count) => {
+      let id = undefined;
+      do {
+        // ensure id is not in list of mappings
+        id = FlowJS.Tools.GenerateId(count);
+      } while (idMapping[id]);
+      return id;
     }
 
-    for (var i = 0; i < data.links.length; i++) {
-      var linkData = data.links[i];
+    for (let node of data.nodes) {
+      // node id remapping
+      const newNodeId = generateUniqueId(8);
+      idMapping[node.id] = newNodeId;
+      node.id = newNodeId;
 
-      var sourceNode = idMapping[linkData.source.substring(0, 8)];
-      var sourceConnector = linkData.source.substring(9);
-
-      var targetNode = idMapping[linkData.target.substring(0, 8)];
-      var targetConnector = linkData.target.substring(9);
-
-      linkData.source = `${sourceNode}.${sourceConnector}`;
-      linkData.target = `${targetNode}.${targetConnector}`;
-
-      var link = new Link(linkData.source, linkData.target, linkData);
-      link.designer = this;
-
-      for (var n_id = 0; n_id < this.nodes.length; n_id++) {
-        var node = this.nodes[n_id];
-
-        if (node.id == sourceNode) {
-          var connector = node.getConnector(sourceConnector);
-          if (connector != undefined) {
-            link.sourceConnector = connector;
-          }
-          continue;
-        }
-        if (node.id == targetNode) {
-          var connector = node.getConnector(targetConnector);
-          if (connector != undefined) {
-            link.targetConnector = connector;
-          }
-          continue;
-        }
+      for (let input of node.inputs) {
+        // input connector id remapping
+        const newConnectorId = generateUniqueId(4);
+        idMapping[input.id] = newConnectorId;
+        input.id = newConnectorId;
       }
 
-      if (link.sourceConnector && link.targetConnector) {
-        this.links.push(link);
+      for (let output of node.outputs) {
+        // output connector id remapping
+        const newConnectorId = generateUniqueId(4);
+        idMapping[output.id] = newConnectorId;
+        output.id = newConnectorId;
       }
     }
 
+    for (let link of data.links) {
+      // link id remapping
+      var sourceNode = idMapping[link.source.substring(0, 8)];
+      var sourceConnector = idMapping[link.source.substring(9)];
+
+      var targetNode = idMapping[link.target.substring(0, 8)];
+      var targetConnector = idMapping[link.target.substring(9)];
+
+      link.source = `${sourceNode}.${sourceConnector}`;
+      link.target = `${targetNode}.${targetConnector}`;
+    }
+
+    this.import(data, true);
     this.refresh();
   }
 
   pushUndoHistory() {
+    // clone into history by value
     this.undoHistory.push(JSON.stringify(this.export()));
     this.redoHistory = [];
 
@@ -648,6 +644,13 @@ class Designer {
       if (!link) return;
 
       this.callbacks.linkCreated(link);
+    };
+
+    this.callbacks.invokeLinkImported = (link) => {
+      if (!this.callbacks.linkImported) return;
+      if (!link) return;
+
+      this.callbacks.linkImported(link);
     };
 
     this.callbacks.invokeLinkDeleted = (link) => {

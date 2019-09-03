@@ -1,5 +1,3 @@
-var FlowJS = FlowJS || {};
-
 FlowJS.ConnectorStyle = {
   Square: 'Square',
   Round: 'Round',

@@ -1,7 +1,3 @@
-"use strict";
-
-var FlowJS = FlowJS || {};
-
 FlowJS.Movement = {
   MouseDown: (e) => {
     if (e.button != 0)

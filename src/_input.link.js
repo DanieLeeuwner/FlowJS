@@ -1,5 +1,3 @@
-"use strict";
-
 class LinkInputHandler extends InputHandler {
   constructor(designer) {
     super(designer);

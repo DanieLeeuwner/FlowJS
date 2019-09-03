@@ -1,5 +1,3 @@
-"use strict";
-
 class Node {
 
   constructor(data) {

@@ -1,5 +1,3 @@
-"use strict";
-
 class LinkMovementHandler extends MovementHandler {
   constructor(designer) {
     super(designer);

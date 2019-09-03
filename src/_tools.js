@@ -1,4 +1,6 @@
-var FlowJS = FlowJS || {};
+"use strict";
+
+var FlowJS = {};
 
 FlowJS.Tools = {
   GenerateId: (length) => {
@@ -34,7 +36,7 @@ FlowJS.Tools = {
       return FlowJS.Tools._containerStyle;
     }
 
-    style = document.createElement('style');
+    let style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML =
      `.FlowJS_Container {
@@ -48,8 +50,7 @@ FlowJS.Tools = {
 
       .FlowJS_Container:focus {
         outline: 0;
-      }
-      `;
+      }`;
     document.getElementsByTagName('head')[0].appendChild(style);
 
     FlowJS.Tools._containerStyle = 'FlowJS_Container';

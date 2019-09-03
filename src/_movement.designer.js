@@ -1,5 +1,3 @@
-"use strict";
-
 class DesignerMovementHandler extends MovementHandler {
   constructor(designer) {
     super(designer);

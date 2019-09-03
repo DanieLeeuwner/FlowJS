@@ -1,5 +1,3 @@
-"use strict";
-
 class NodeInputHandler extends InputHandler {
   constructor(designer) {
     super(designer);

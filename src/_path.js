@@ -1,5 +1,3 @@
-var FlowJS = FlowJS || {};
-
 FlowJS.PathTools = {
 
   _getBasePoints: (type, initialPosition, finalPosition) => {
@@ -18,12 +16,12 @@ FlowJS.PathTools = {
 
       x3 = finalPosition.x - FlowJS.Config.Link.InitialLength;
       x4 = finalPosition.x;
-      y2 = finalPosition.y;      
+      y2 = finalPosition.y;
     } else {
 
       x1 = finalPosition.x;
       x2 = finalPosition.x + FlowJS.Config.Link.InitialLength;
-      y1 = finalPosition.y;  
+      y1 = finalPosition.y;
 
       x3 = initialPosition.x - FlowJS.Config.Link.InitialLength;
       x4 = initialPosition.x;

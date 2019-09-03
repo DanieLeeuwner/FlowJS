@@ -169,6 +169,11 @@ All validation events should be functions that expect the specified parameter an
 | <kbd>Ctrl</kbd> + Mouse wheel | Change designer zoom level. |
 | <kbd>Ctrl</kbd> + Left mouse button | Move designer viewport. |
 | <kbd>Shift</kbd> + Left mouse button | Select multiple nodes. |
+| <kbd>ctrl</kbd> + <kbd>c</kbd> | Copy selected nodes to the clipboard. |
+| <kbd>ctrl</kbd> + <kbd>x</kbd> | Cut selected nodes to the clipboard. |
+| <kbd>ctrl</kbd> + <kbd>v</kbd> | Paste nodes from the clipboard |
+| <kbd>ctrl</kbd> + <kbd>z</kbd> | Undo last action. |
+| <kbd>ctrl</kbd> + <kbd>y</kbd> | Redo last action. |
 
 ### Export
 
@@ -260,6 +265,3 @@ designer.refresh();
 | Designer info       | Display info about designer (x, y, scale, total nodes, etc.). |
 | Mobile support      | Support for multi-touch gestures.                            |
 | Node unselect       | Node unselect when using <kbd>Shift</kbd> + Left mouse button on selected node. |
-| History             | Support for undo and redo actions.                           |
-| Selection reference | Change selection rectangle coordinates to reference page rather than designer |
-| Demo                | Create a functional demo application                     |

@@ -1,5 +1,3 @@
-"use strict";
-
 class ConnectorMovementHandler extends MovementHandler {
   constructor(designer) {
     super(designer);

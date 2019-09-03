@@ -1,5 +1,3 @@
-var FlowJS = FlowJS || {};
-
 FlowJS.Palette = {
   Pastel: [
     '#FF8B8B',
