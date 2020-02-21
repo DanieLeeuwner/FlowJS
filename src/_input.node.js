@@ -47,15 +47,21 @@ class NodeInputHandler extends InputHandler {
         }
         break;
 
+      case 's':
+        if (e.ctrlKey) {
+          // TODO: send designer save command
+        }
+        break;
+
       case 'z':
         if (e.ctrlKey) {
-          this.designer.performUndo();
+          //this.designer.performUndo();
         }
         break;
 
       case 'y':
         if (e.ctrlKey) {
-          this.designer.performRedo();
+          //this.designer.performRedo();
         }
         break;
     }

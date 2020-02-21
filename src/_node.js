@@ -13,8 +13,15 @@ class Node {
 
     this.type = data.type || 'unknown';
 
+    this.code = data.code;
     this.name = data.name;
     this.description = data.description;
+    this.hint = data.hint;
+
+    this.hideText = data.hideText;
+
+    this.deprecated = data.deprecated;
+    this.deprecationMessage = data.deprecationMessage;
 
     this.selected = false;
     this.initialX = 0;
@@ -103,6 +110,7 @@ class Node {
       y: this.y,
 
       type: this.type,
+      code: this.code,
       name: this.name,
       description: this.description,
       hint: this.hint,
@@ -133,7 +141,9 @@ class Node {
 
     this._renderBackground();
 
-    this._renderTextArea();
+    if (!this.hideText) {
+      this._renderTextArea();
+    }
 
     this._renderMouseEventListener();
 

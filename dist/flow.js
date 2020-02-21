@@ -1,6 +1,6 @@
 /*
 Created by filepack
-Date: Tuesday, September 3, 2019
+Date: Friday, February 21, 2020
 */
 
 /*
@@ -923,15 +923,21 @@ class NodeInputHandler extends InputHandler {
         }
         break;
 
+      case 's':
+        if (e.ctrlKey) {
+          // TODO: send designer save command
+        }
+        break;
+
       case 'z':
         if (e.ctrlKey) {
-          this.designer.performUndo();
+          //this.designer.performUndo();
         }
         break;
 
       case 'y':
         if (e.ctrlKey) {
-          this.designer.performRedo();
+          //this.designer.performRedo();
         }
         break;
     }
@@ -1720,8 +1726,15 @@ class Node {
 
     this.type = data.type || 'unknown';
 
+    this.code = data.code;
     this.name = data.name;
     this.description = data.description;
+    this.hint = data.hint;
+
+    this.hideText = data.hideText;
+
+    this.deprecated = data.deprecated;
+    this.deprecationMessage = data.deprecationMessage;
 
     this.selected = false;
     this.initialX = 0;
@@ -1810,6 +1823,7 @@ class Node {
       y: this.y,
 
       type: this.type,
+      code: this.code,
       name: this.name,
       description: this.description,
       hint: this.hint,
@@ -1840,7 +1854,9 @@ class Node {
 
     this._renderBackground();
 
-    this._renderTextArea();
+    if (!this.hideText) {
+      this._renderTextArea();
+    }
 
     this._renderMouseEventListener();
 
