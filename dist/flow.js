@@ -1768,8 +1768,10 @@ class Node {
   }
 
   refresh() {
-    // update text
-    this.refreshText();
+    if (!this.hideText) {
+      // update text
+      this.refreshText();
+    }
 
     // update image
     this.refreshImage();
