@@ -5,7 +5,6 @@ class Node {
     this.x = data.x || 0;
     this.y = data.y || 0;
 
-
     this.width = data.width || 225;
     this.height = data.height || 45;
 
@@ -26,6 +25,8 @@ class Node {
     this.selected = false;
     this.initialX = 0;
     this.initialY = 0;
+
+    this.horizontalMargin = 45;
 
     this.data = data.data || {};
 
@@ -49,7 +50,6 @@ class Node {
     }
 
     this.element = undefined;
-    this.image
 
     this.designer = data.designer;
   }
@@ -72,7 +72,46 @@ class Node {
   }
 
   refreshText() {
-    this.nameText.innerHTML = this.name;
+    this.nameText.innerHTML = '';
+
+    let textLines = [];
+    let availableWidth = this.width - this.horizontalMargin - 15;
+    let nameWords = this.name.split(' ');
+
+    let fontDefinition = 'normal ' + FlowJS.Config.Font.Size + 'px ' + FlowJS.Config.Font.Family;
+
+    let currentLine = '';
+
+    for (let index = 0; index < nameWords.length; index++) {
+      let word = nameWords[index];
+
+      let pendingLine = currentLine + ' ' + word;
+      let pendingWidth = FlowJS.Tools.MeasureText(pendingLine, fontDefinition);
+      if (pendingWidth > availableWidth) {
+        textLines.push(currentLine);
+        currentLine = word;
+      } else if (index == nameWords.length - 1) {
+        textLines.push(pendingLine);
+      } else {
+        currentLine = pendingLine;
+      }
+    }
+
+    let textLineLength = (textLines.length * (FlowJS.Config.Font.Size + 2)) + 15;
+    this.height = Math.max(this.height, textLineLength);
+
+    let firstElement = true;
+
+    for (let line of textLines) {
+      var tspan = FlowJS.Tools.GenerateSVG('tspan', {
+        'x': this.horizontalMargin,
+        'dy': firstElement ? 0 : (FlowJS.Config.Font.Size + 2)
+      });
+      this.nameText.appendChild(tspan);
+      tspan.innerHTML = line;
+
+      firstElement = false;
+    }
   }
 
   refreshImage() {
@@ -100,7 +139,17 @@ class Node {
   }
 
   refreshSize() {
+    this.element.setAttribute('width', this.width);
+    this.element.setAttribute('height', this.height);
 
+    this.background.setAttribute('width', this.width);
+    this.background.setAttribute('height', this.height);
+
+    this.actionArea.setAttribute('width', this.width);
+    this.actionArea.setAttribute('height', this.height);
+
+    this.clippingRectangle.setAttribute('width', this.width - this.horizontalMargin - 15);
+    this.clippingRectangle.setAttribute('height', this.height);
   }
 
   export() {
@@ -133,13 +182,8 @@ class Node {
   }
 
   render() {
-    var minHeight = (Math.max(this.inputs.length, this.outputs.length) * 15) + 5;
-    this.height = Math.max(minHeight, this.height);
-
     // container
     this.element = FlowJS.Tools.GenerateSVG('g', {
-      'width': this.width,
-      'height': this.height,
       'transform': `translate(${this.x}, ${this.y})`,
     });
 
@@ -161,17 +205,13 @@ class Node {
   }
 
   _renderBackground() {
-    var backgroundRectangle = FlowJS.Tools.GenerateSVG('rect', {
-      'width': this.width,
-      'height': this.height,
+    this.background = FlowJS.Tools.GenerateSVG('rect', {
       'x': 0,
       'y': 0,
       'rx': 5,
       'ry': 5
     });
-    this.element.appendChild(backgroundRectangle);
-
-    this.background = backgroundRectangle;
+    this.element.appendChild(this.background);
   }
 
   _renderTextArea() {
@@ -198,15 +238,11 @@ class Node {
     });
     this.element.appendChild(clippingArea);
 
-    var horizontalMargin = 45;
-
-    var clippingRectangle = FlowJS.Tools.GenerateSVG('rect', {
-      'x': horizontalMargin,
-      'y': 0,
-      'width': this.width - horizontalMargin - 15,
-      'height': this.height,
+    this.clippingRectangle = FlowJS.Tools.GenerateSVG('rect', {
+      'x': this.horizontalMargin,
+      'y': 0
     });
-    clippingArea.appendChild(clippingRectangle);
+    clippingArea.appendChild(this.clippingRectangle);
 
     // text container
     this.textArea = FlowJS.Tools.GenerateSVG('g', {
@@ -216,7 +252,7 @@ class Node {
 
     // name
     this.nameText = FlowJS.Tools.GenerateSVG('text', {
-      'x': horizontalMargin,
+      'x': this.horizontalMargin,
       'y': 15,
       'font-size': FlowJS.Config.Font.Size,
       'font-weight': 'bold'
@@ -225,20 +261,18 @@ class Node {
   }
 
   _renderMouseEventListener() {
-    var actionArea = FlowJS.Tools.GenerateSVG('rect', {
+    this.actionArea = FlowJS.Tools.GenerateSVG('rect', {
       'x': 0,
       'y': 0,
-      'width': this.width,
-      'height': this.height,
       'cursor': FlowJS.Config.Node.Cursor
     });
-    this.element.appendChild(actionArea);
+    this.element.appendChild(this.actionArea);
 
-    actionArea.style.fill = 'rgba(0,0,0,0)';
-    actionArea.node = this;
-    actionArea.designer = this.designer;
+    this.actionArea.style.fill = 'rgba(0,0,0,0)';
+    this.actionArea.node = this;
+    this.actionArea.designer = this.designer;
 
-    actionArea.addEventListener('mousedown', (e) => {
+    this.actionArea.addEventListener('mousedown', (e) => {
       if (e.button != 0) {
         return;
       }
@@ -293,21 +327,21 @@ class Node {
   }
 
   _renderOutputs() {
-    for (var i = 0; i < this.outputs.length; i++) {
-      var connection = this.outputs[i];
+    for (let i = 0; i < this.outputs.length; i++) {
+      let connection = this.outputs[i];
 
       connection.node = this;
       connection.designer = this.designer;
       connection.type = FlowJS.ConnectorType.Output;
 
-      var connectionElement = connection.render();
+      let connectionElement = connection.render();
       this.element.appendChild(connectionElement);
 
       connection.offsetX = this.width;
       connection.offsetY = 10 + (i * 15);
 
-      var x = this.width - 5;
-      var y = 5 + (i * 15);
+      let x = this.width - 5;
+      let y = 5 + (i * 15);
 
       connectionElement.setAttribute('transform', `translate(${x}, ${y})`);
     }
@@ -318,19 +352,19 @@ class Node {
   }
 
   inRectangle(xi, yi, xf, yf) {
-    var centerX = this.x + (this.width / 2);
-    var cetnerY = this.y + (this.height / 2)
+    let centerX = this.x + (this.width / 2);
+    let cetnerY = this.y + (this.height / 2)
     return (centerX >= xi && cetnerY >= yi && centerX <= xf && cetnerY <= yf);
   }
 
   getConnector(id) {
-    for (var i = 0; i < this.inputs.length; i++) {
+    for (let i = 0; i < this.inputs.length; i++) {
       if (this.inputs[i].id == id) {
         return this.inputs[i];
       }
     }
 
-    for (var i = 0; i < this.outputs.length; i++) {
+    for (let i = 0; i < this.outputs.length; i++) {
       if (this.outputs[i].id == id) {
         return this.outputs[i];
       }

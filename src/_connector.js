@@ -125,7 +125,7 @@ class Connector {
     if (this.name != undefined && this.name != '') {
       this.nameText = FlowJS.Tools.GenerateSVG('text', {
         'font-size': FlowJS.Config.Font.Size,
-        'opacity': 0.1
+        'opacity': 0.25
       });
       this.element.appendChild(this.nameText);
       this.nameText.innerHTML = this.name;
@@ -139,7 +139,8 @@ class Connector {
           y = 8;
           break;
         case FlowJS.ConnectorType.Output:
-          x = (FlowJS.Tools.MeasureText(this.name, 'normal ' + FlowJS.Config.Font.Size + 'px ' + FlowJS.Config.Font.Family) * -1) - 2;
+          let fontDefinintion = 'normal ' + FlowJS.Config.Font.Size + 'px ' + FlowJS.Config.Font.Family;
+          x = (FlowJS.Tools.MeasureText(this.name, fontDefinintion) * -1) - 2;
           y = 8;
           break;
       }
@@ -162,7 +163,7 @@ class Connector {
     if (this.selected) return;
 
     this.connector.style.stroke = this.node.borderColor;
-    this.nameText.setAttribute('opacity', 0.1);
+    this.nameText.setAttribute('opacity', 0.25);
 
     this.node.unblur();
   }
