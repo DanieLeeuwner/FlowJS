@@ -154,6 +154,8 @@ class Connector {
   focus() {
     this.connector.style.stroke = this.designer.theme.Focus;
     this.nameText.setAttribute('opacity', 0.8);
+
+    this.node.blur();
   }
 
   unfocus() {
@@ -161,5 +163,7 @@ class Connector {
 
     this.connector.style.stroke = this.node.borderColor;
     this.nameText.setAttribute('opacity', 0.1);
+
+    this.node.unblur();
   }
 }

@@ -68,6 +68,6 @@ FlowJS.Config = {
 
   Font: {
     Family: '"Lucida Console", Monaco, monospace',
-    Size: 14,
+    Size: 10,
   }
 }

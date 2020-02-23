@@ -291,7 +291,7 @@ FlowJS.Config = {
 
   Font: {
     Family: '"Lucida Console", Monaco, monospace',
-    Size: 14,
+    Size: 10,
   }
 }
 
@@ -1786,7 +1786,6 @@ class Node {
 
   refreshText() {
     this.nameText.innerHTML = this.name;
-    this.descriptionText.innerHTML = this.description;
   }
 
   refreshImage() {
@@ -1890,45 +1889,52 @@ class Node {
 
   _renderTextArea() {
     // text clipping area
-    var clippingId = this.id;
+    this._clippingId = FlowJS.Tools.GenerateId(12);
+    this._blurFilterId = FlowJS.Tools.GenerateId(12);
+
+    var defs = FlowJS.Tools.GenerateSVG('defs');
+    this.element.appendChild(defs);
+
+    var filter = FlowJS.Tools.GenerateSVG('filter', {
+      'id': this._blurFilterId
+    });
+    defs.appendChild(filter);
+
+    var blurFilter = FlowJS.Tools.GenerateSVG('feGaussianBlur', {
+      'in': 'SourceGraphic',
+      'stdDeviation': 1
+    });
+    filter.appendChild(blurFilter);
 
     var clippingArea = FlowJS.Tools.GenerateSVG('clipPath', {
-      'id': clippingId
+      'id': this._clippingId
     });
     this.element.appendChild(clippingArea);
 
-    var horizontalMargin = 30;
+    var horizontalMargin = 45;
 
     var clippingRectangle = FlowJS.Tools.GenerateSVG('rect', {
       'x': horizontalMargin,
       'y': 0,
-      'width': this.width - horizontalMargin * 2,
+      'width': this.width - horizontalMargin - 15,
       'height': this.height,
     });
     clippingArea.appendChild(clippingRectangle);
 
     // text container
-    var textArea = FlowJS.Tools.GenerateSVG('g', {
-      'clip-path': `url(#${clippingId})`
+    this.textArea = FlowJS.Tools.GenerateSVG('g', {
+      'clip-path': `url(#${this._clippingId})`
     });
-    this.element.appendChild(textArea);
+    this.element.appendChild(this.textArea);
 
     // name
     this.nameText = FlowJS.Tools.GenerateSVG('text', {
       'x': horizontalMargin,
-      'y': 20,
+      'y': 15,
       'font-size': FlowJS.Config.Font.Size,
       'font-weight': 'bold'
     });
-    textArea.appendChild(this.nameText);
-
-    // description
-    this.descriptionText = FlowJS.Tools.GenerateSVG('text', {
-      'x': horizontalMargin,
-      'y': 20 + FlowJS.Config.Font.Size,
-      'font-size': FlowJS.Config.Font.Size,
-    });
-    textArea.appendChild(this.descriptionText);
+    this.textArea.appendChild(this.nameText);
   }
 
   _renderMouseEventListener() {
@@ -2046,6 +2052,16 @@ class Node {
 
   destroy() {
     this.designer._nodeContainer.removeChild(this.element);
+  }
+
+  blur() {
+    this.textArea.setAttribute('filter', `url(#${this._blurFilterId})`);
+    this.textArea.style.opacity = 0.3;
+  }
+
+  unblur() {
+    this.textArea.removeAttribute('filter');
+    this.textArea.style.opacity = 1;
   }
 }
 
@@ -2209,6 +2225,8 @@ class Connector {
   focus() {
     this.connector.style.stroke = this.designer.theme.Focus;
     this.nameText.setAttribute('opacity', 0.8);
+
+    this.node.blur();
   }
 
   unfocus() {
@@ -2216,6 +2234,8 @@ class Connector {
 
     this.connector.style.stroke = this.node.borderColor;
     this.nameText.setAttribute('opacity', 0.1);
+
+    this.node.unblur();
   }
 }
 

@@ -2,6 +2,29 @@ var controls = controls || [];
 controls = [
   {
     "inputConnections": {
+      "Input name 1": [],
+      "Input name 2": [],
+      "Input name 3": []
+    },
+    "outputConnections": {
+      "Output name 1": [],
+      "Output name 2": [],
+      "Output name 3": []
+    },
+    "configParameters": [
+      {
+        "name": "Key",
+        "type": "String",
+        "required": true,
+        "value": null
+      }
+    ],
+    "id": null,
+    "name": "Test link name. This name is long and should span multiple lines when displayed within the node.",
+    "description": "Source for flow links"
+  },
+  {
+    "inputConnections": {
       "Input": []
     },
     "outputConnections": {},
