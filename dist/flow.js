@@ -1887,6 +1887,7 @@ class Node {
       name: this.name,
       description: this.description,
       hint: this.hint,
+      image: this.image,
 
       hideText: this.hideText,
 
@@ -1913,6 +1914,8 @@ class Node {
     });
 
     this._renderBackground();
+
+    this._renderBlurArea();
 
     if (!this.hideText) {
       this._renderTextArea();
@@ -1941,9 +1944,7 @@ class Node {
     this.element.appendChild(this.background);
   }
 
-  _renderTextArea() {
-    // text clipping area
-    this._clippingId = FlowJS.Tools.GenerateId(12);
+  _renderBlurArea() {
     this._blurFilterId = FlowJS.Tools.GenerateId(12);
 
     var defs = FlowJS.Tools.GenerateSVG('defs');
@@ -1959,6 +1960,11 @@ class Node {
       'stdDeviation': 1
     });
     filter.appendChild(blurFilter);
+  }
+
+  _renderTextArea() {
+    // text clipping area
+    this._clippingId = FlowJS.Tools.GenerateId(12);
 
     var clippingArea = FlowJS.Tools.GenerateSVG('clipPath', {
       'id': this._clippingId
@@ -2109,16 +2115,20 @@ class Node {
   }
 
   blur() {
-    this.textArea.setAttribute('filter', `url(#${this._blurFilterId})`);
-    this.textArea.style.opacity = 0.1;
+    if (!this.hideText) {
+      this.textArea.setAttribute('filter', `url(#${this._blurFilterId})`);
+      this.textArea.style.opacity = 0.1;
+    }
 
     this.imageArea.setAttribute('filter', `url(#${this._blurFilterId})`);
     this.imageArea.style.opacity = 0.5;
   }
 
   unblur() {
-    this.textArea.removeAttribute('filter');
-    this.textArea.style.opacity = 1;
+    if (!this.hideText) {
+      this.textArea.removeAttribute('filter');
+      this.textArea.style.opacity = 1;
+    }
 
     this.imageArea.removeAttribute('filter');
     this.imageArea.style.opacity = 1;
