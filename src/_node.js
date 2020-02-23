@@ -8,6 +8,8 @@ class Node {
     this.width = data.width || 225;
     this.height = data.height || 45;
 
+    this.image = data.image;
+
     this.id = data.id || FlowJS.Tools.GenerateId(8);
 
     this.type = data.type || 'unknown';
@@ -98,7 +100,9 @@ class Node {
     }
 
     let textLineLength = (textLines.length * (FlowJS.Config.Font.Size + 2)) + 15;
-    this.height = Math.max(this.height, textLineLength);
+    let maxConnectorCount = Math.max(this.inputs.length, this.outputs.length);
+    let connectorMaxLength = Math.max(this.height, (maxConnectorCount * 15) + 5);
+    this.height = Math.max(connectorMaxLength, textLineLength);
 
     let firstElement = true;
 
@@ -115,7 +119,11 @@ class Node {
   }
 
   refreshImage() {
-    // image not supported
+    if (!this.image) {
+      return;
+    }
+
+    this.imageArea.setAttribute('href', this.image);
   }
 
   refreshBackground() {
@@ -148,8 +156,10 @@ class Node {
     this.actionArea.setAttribute('width', this.width);
     this.actionArea.setAttribute('height', this.height);
 
-    this.clippingRectangle.setAttribute('width', this.width - this.horizontalMargin - 15);
-    this.clippingRectangle.setAttribute('height', this.height);
+    if (!this.hideText) {
+      this.clippingRectangle.setAttribute('width', this.width - this.horizontalMargin - 15);
+      this.clippingRectangle.setAttribute('height', this.height);
+    }
   }
 
   export() {
@@ -164,6 +174,8 @@ class Node {
       name: this.name,
       description: this.description,
       hint: this.hint,
+
+      hideText: this.hideText,
 
       data: this.data,
 
@@ -192,6 +204,8 @@ class Node {
     if (!this.hideText) {
       this._renderTextArea();
     }
+
+    this._renderImage();
 
     this._renderMouseEventListener();
 
@@ -305,6 +319,16 @@ class Node {
     });
   }
 
+  _renderImage() {
+    this.imageArea = FlowJS.Tools.GenerateSVG('image', {
+      'x': 7.5,
+      'y': 7.5,
+      'width': 35,
+      'height': 35
+    });
+    this.element.appendChild(this.imageArea);
+  }
+
   _renderInputs() {
     for (var i = 0; i < this.inputs.length; i++) {
       var connection = this.inputs[i];
@@ -347,10 +371,6 @@ class Node {
     }
   }
 
-  setForeignContent(element) {
-
-  }
-
   inRectangle(xi, yi, xf, yf) {
     let centerX = this.x + (this.width / 2);
     let cetnerY = this.y + (this.height / 2)
@@ -378,10 +398,16 @@ class Node {
   blur() {
     this.textArea.setAttribute('filter', `url(#${this._blurFilterId})`);
     this.textArea.style.opacity = 0.1;
+
+    this.imageArea.setAttribute('filter', `url(#${this._blurFilterId})`);
+    this.imageArea.style.opacity = 0.5;
   }
 
   unblur() {
     this.textArea.removeAttribute('filter');
     this.textArea.style.opacity = 1;
+
+    this.imageArea.removeAttribute('filter');
+    this.imageArea.style.opacity = 1;
   }
 }
