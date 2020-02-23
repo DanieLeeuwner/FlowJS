@@ -123,6 +123,9 @@ class Node {
       foregroundColor: this.foregroundColor,
       borderColor: this.borderColor,
 
+      width: this.width,
+      height: this.height,
+
       inputs: FlowJS.Tools.ExportCollection(this.inputs),
       outputs: FlowJS.Tools.ExportCollection(this.outputs),
     }
