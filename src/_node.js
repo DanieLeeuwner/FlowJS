@@ -327,8 +327,8 @@ class Node {
 
   _renderImage() {
     this.imageArea = FlowJS.Tools.GenerateSVG('image', {
-      'x': 7.5,
-      'y': 7.5,
+      'x': 5,
+      'y': 5,
       'width': 35,
       'height': 35
     });
