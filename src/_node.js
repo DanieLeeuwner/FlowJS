@@ -377,7 +377,7 @@ class Node {
 
   blur() {
     this.textArea.setAttribute('filter', `url(#${this._blurFilterId})`);
-    this.textArea.style.opacity = 0.25;
+    this.textArea.style.opacity = 0.1;
   }
 
   unblur() {
