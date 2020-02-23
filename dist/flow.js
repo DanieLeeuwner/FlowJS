@@ -2090,7 +2090,7 @@ class Node {
 
   blur() {
     this.textArea.setAttribute('filter', `url(#${this._blurFilterId})`);
-    this.textArea.style.opacity = 0.3;
+    this.textArea.style.opacity = 0.25;
   }
 
   unblur() {
@@ -2230,9 +2230,11 @@ class Connector {
     if (this.name != undefined && this.name != '') {
       this.nameText = FlowJS.Tools.GenerateSVG('text', {
         'font-size': FlowJS.Config.Font.Size,
-        'opacity': 0.3
+        'opacity': 0.25
       });
       this.element.appendChild(this.nameText);
+
+      this.nameText.style.pointerEvents = 'none';
       this.nameText.innerHTML = this.name;
 
       var x = 0;
@@ -2268,7 +2270,7 @@ class Connector {
     if (this.selected) return;
 
     this.connector.style.stroke = this.node.borderColor;
-    this.nameText.setAttribute('opacity', 0.3);
+    this.nameText.setAttribute('opacity', 0.25);
 
     this.node.unblur();
   }

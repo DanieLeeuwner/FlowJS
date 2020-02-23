@@ -128,6 +128,8 @@ class Connector {
         'opacity': 0.25
       });
       this.element.appendChild(this.nameText);
+
+      this.nameText.style.pointerEvents = 'none';
       this.nameText.innerHTML = this.name;
 
       var x = 0;
