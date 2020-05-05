@@ -176,6 +176,9 @@ class Node {
       hint: this.hint,
       image: this.image,
 
+      deprecated: this.deprecated,
+      deprecationMessage: this.deprecationMessage,
+
       hideText: this.hideText,
 
       data: this.data,
